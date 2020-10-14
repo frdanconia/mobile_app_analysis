@@ -87,5 +87,11 @@ ggplot(salary, aes(x = klient_activity, y = wynagrodzenie)) + geom_point() + geo
 #widać, że klienci z wyzszym wynagrodzeniem sa bardziej aktywni w naszej aplikacji jednak nalezy zwrocic uwage na to, ze wariancja jest wysoka 
 
 
-
+for (i in 1:length(salary$klient_id)) {
+  dates <- session_info$date[session_info$klient_id == salary$klient_id[i]]
+  dates <- dates[dates != "0"]
+  dates <- dates[!is.na(dates)]
+  dates <- as.Date(dates)
+  salary$avg_diff_days[i] <- as.numeric(mean(diff(sort(dates))))
+}
 

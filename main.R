@@ -22,6 +22,18 @@ sum(klienci[klienci$czy_w_bazie_klientow == 0,]$czy_kupil) / nrow(klienci[klienc
 sum(klienci$czy_kupil) / nrow(klienci)
 #Sposrod 6000 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  17.8% klientow kupilo uslugi premium
 
+session <- merge(session_info,session_geo,by="id_sesji")
+
+for (i in 1:length(klienci$klient_id)) {
+  klienci$lon_mean <- mean(session$lon[session$klient_id == klienci$klient_id[i]])
+  klienci$lon_sd <- sd(session$lon[session$klient_id == klienci$klient_id[i]])
+  klienci$lat_mean <- mean(session$lat[session$klient_id == klienci$klient_id[i]])
+  klienci$lat_sd <- sd(session$lat[session$klient_id == klienci$klient_id[i]])
+}
+
+
+
+
 table(klienci$wyksztalcenie[klienci$czy_kupil == 1])
 mean(klienci$wiek[!is.na(klienci$wiek)])
 median(klienci$wiek[!is.na(klienci$wiek)])
@@ -33,6 +45,7 @@ median(klienci$wiek[!is.na(klienci$wiek)])
 #w tym wieku kilkukrotnie czesciej maja wyksztalcenie zasadnicze zawodowe
 #Jezeli jednak model biznesowy uwzglednial kierowanie sie przede wszystkim do osob z wyksztalceniem wyzszym to
 #należaloby sie zastanowic czy satysfakcjonuje nas fakt, że mamy dokladnie tyle samo klientow z wyksztalceniem srednim i wyzszym
+
 
 
 salary <-
@@ -135,5 +148,9 @@ ggplot(salary, aes(x = session_length_10percentile, y = wynagrodzenie)) + geom_p
 #Zarobki klientów nie maja wplywu na czas sprzedzany w appce, srednia, mediana, wariancja i 10 i 90 percentyl spedzanego czasu na to nie wskazuja
 
 
+temp <- salary
+temp$wynagrodzenie <- c()
+klienci <- merge(klienci,temp,by=c("klient_id"))
 
+klienci$
 

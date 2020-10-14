@@ -10,11 +10,11 @@ length(unique(klienci$klient_id))
 length(unique(klienci$klient_id[klienci$czy_w_bazie_klientow == 1]))
 #Zakladajac, że baza danych zawiera wszystkich klientow firmy, firma ta ma obecnie 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy oraz 6000 klientów obecnych tylko w analizowanej bazie
 
-klienci_w_bazie <- klienci[klienci$czy_w_bazie_klientow == 1, ]
+klienci_w_bazie <- klienci[klienci$czy_w_bazie_klientow == 1,]
 sum(klienci_w_bazie$czy_kupil) / nrow(klienci_w_bazie)
 #Sposrod 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  18% klientow kupilo uslugi premium
 
-sum(klienci[klienci$czy_w_bazie_klientow == 0, ]$czy_kupil) / nrow(klienci[klienci$czy_w_bazie_klientow == 0, ])
+sum(klienci[klienci$czy_w_bazie_klientow == 0,]$czy_kupil) / nrow(klienci[klienci$czy_w_bazie_klientow == 0,])
 #Sposrod 1234 klientów którzy znajduja sie tylko w tej jednej bazie firmy 16.85% klientow kupilo uslugi premium
 
 sum(klienci$czy_kupil) / nrow(klienci)
@@ -42,13 +42,26 @@ for (i in 1:length(salary$klient_id)) {
 }
 
 for (i in 1:length(salary$klient_id)) {
-  salary$session_length_mean[i] <- mean(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]])
-  salary$session_length_median[i] <- median(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]])
+  salary$session_length_mean[i] <-
+    mean(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]])
+  salary$session_length_median[i] <-
+    median(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]])
 }
 
-plot(salary$nsessions,salary$wynagrodzenie)
+plot(salary$nsessions, salary$wynagrodzenie)
 library(tidyverse)
-ggplot(salary,aes(x=nsessions,y=wynagrodzenie)) + geom_point() + geom_smooth(method="loess", se=F)
-#ciezko stwierdzic na ile parametr nsessions odzwierciedla czestosc korzystania z aplikacji 
+ggplot(salary, aes(x = nsessions, y = wynagrodzenie)) + geom_point() + geom_smooth(method =
+                                                                                     "loess", se = F)
+#Ciezko stwierdzic na ile parametr nsessions odzwierciedla czestosc korzystania z aplikacji bo jest on mocno zwiazany z tym od jak dawna dany klient jest naszym klientem
+#Widać jednak, że klienci z wieksza ilosci sesji sa też klientami nieco lepiej zarabiajacymi
 
-plot(salary$)
+for (i in 1:length(salary$klient_id)) {
+  salary$session_length_mean[i] <-
+    mean(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]])
+  salary$session_length_median[i] <-
+    median(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]])
+}
+ 
+library(lubridate)
+
+as.Date(session_info$date[session_info$klient_id == salary$klient_id[1]])

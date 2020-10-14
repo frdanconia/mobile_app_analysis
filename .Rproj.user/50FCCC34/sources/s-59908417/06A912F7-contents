@@ -23,9 +23,10 @@ sum(klienci$czy_kupil) / nrow(klienci)
 table(klienci$wyksztalcenie[klienci$czy_kupil == 1])
 mean(klienci$wiek[!is.na(klienci$wiek)])
 median(klienci$wiek[!is.na(klienci$wiek)])
-#To czy model biznesowy trafia do osob wyksztalconych zalezy od struktury wyksztalcenia w populacji
+#To czy model biznesowy trafia do osob wyksztalconych zalezy od struktury wyksztalcenia w populacji potencjalnych klinetow
 #Nie ma ani jednej obserwacji z wyksztalceniem zasadniczym zawodowym, wiec trzeba byloby sie zastanowic czy jest ono kodowane jako podstawowe czy srednie razem z wyksztalceniem srednim zawodowym
-#Biorac jednak pod uwage ze sredni wiek klientow wynosi 50,87 lat a mediana 51 lat to fakt, że w populacji klientow, ktorzy wykupili uslugi
+#Zakladajac ze grupa potencjalnych klientow odzwierciedla populacje Polski
+#i biorac jednak pod uwage ze sredni wiek klientow wynosi 50,87 lat a mediana 51 lat to fakt, że w populacji klientow, ktorzy wykupili uslugi
 #premium znajduje sie o ponad 40% wiecej osob z wyksztalceniem wyzszym niz podstawowym nalezy uznac za sukces gdyz w populacji Polski osoby
 #w tym wieku kilkukrotnie czesciej maja wyksztalcenie zasadnicze zawodowe
 #Jezeli jednak model biznesowy uwzglednial kierowanie sie przede wszystkim do osob z wyksztalceniem wyzszym to
@@ -64,4 +65,13 @@ for (i in 1:length(salary$klient_id)) {
  
 library(lubridate)
 
-as.Date(session_info$date[session_info$klient_id == salary$klient_id[1]])
+for (i in 1:length(salary$klient_id)) {
+  dates <- session_info$date[session_info$klient_id == salary$klient_id[i]]
+  dates <- dates[dates != "0"]
+  dates <- dates[!is.na(dates)]
+  dates <- as.Date(dates)
+  salary$klient_ndays[i] <- as.numeric(today() - min(dates))
+}
+
+salary$klient_ndays <- salary$klient_ndays - (min(salary$klient_ndays) - 1)
+

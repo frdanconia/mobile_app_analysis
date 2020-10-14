@@ -1,6 +1,7 @@
 library(vroom)
 library(lubridate)
 library(tidyverse)
+library(lmtest)
 
 klienci <- vroom("data/klienci.csv")
 session_geo <- vroom("data/session_geo.csv")
@@ -115,14 +116,14 @@ model <- lm(activity_overall~wynagrodzenie,data=salary)
 summary(model)
 plot(model, which=1)
 plot(model, which=2)
-plot(model, which=3)
-
+#Obserwacje odstajace na pierwszych kwantylach 
 plot(model, which=4)
-#jest kilka outlierow
+#jest kilka outlierow jednak zmiany wartoci wspóczynników regresji przy pominiciu tych obserwacji nie przekraczaja 0.1 
 
-plot(model, which=5)
-#Zarobki klientow maja istotny wplyw na czestotliwosc korzystania z aplikacji
-
+bptest(model)
+#Na kazdym realistycznym poziomie istotnosci odrzucamy H0 o stabilnosci wariancji skladnika losowego
+#W danych widac zaleznosc miedzy zarobkami klientow a czestotliwoscia korzystania z aplikacji (tj. osoby ponadprzecietnie czesto korzystajace z aplikacji sa zazwyczaj osobami ponadprzecietnei zarabiajacymi) jednak prosty model liniowy uwzgledniajacy wylacznie czestosc korzystania z aplikacji jest niedostatecznie wyspecyfikowany 
+#W zwiazku z tym uzycie slowa "wplyw" w kontekscie tej zaleznosci byloby pewnym naduzyciem
 
 ggplot(salary, aes(x = session_length_mean, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_median, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
@@ -131,10 +132,8 @@ temp <- salary %>% filter(session_length_variance < 600)
 ggplot(temp, aes(x = session_length_variance, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_90percentile, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_10percentile, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
-#Zarobki klientów nie maja wplyw na czas sprzedzany w appce, srednia, mediana, wariancja i 10 i 90 percentyl spedzanego czasu na to nie wskazuja
+#Zarobki klientów nie maja wplywu na czas sprzedzany w appce, srednia, mediana, wariancja i 10 i 90 percentyl spedzanego czasu na to nie wskazuja
 
 
 
-
-#Zarobki klientow maja statystycznie istotny wplyw na czestotliwosc korzystania z aplikacji
 

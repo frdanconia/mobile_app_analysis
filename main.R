@@ -2,7 +2,6 @@ library(vroom)
 library(lubridate)
 library(tidyverse)
 
-
 klienci <- vroom("data/klienci.csv")
 session_geo <- vroom("data/session_geo.csv")
 session_info <- vroom("data/session_info.csv")
@@ -62,6 +61,8 @@ for (i in 1:length(salary$klient_id)) {
     var(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]])
   salary$session_length_90percentile[i] <-
     quantile(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]],0.9)[[1]]
+  salary$session_length_10percentile[i] <-
+    quantile(session_info$dlugosc_sesji_min[session_info$klient_id == salary$klient_id[i]],0.1)[[1]]
 }
  
 
@@ -80,8 +81,14 @@ for (i in 1:length(salary$klient_id)) {
   dates <- as.Date(dates)
   salary$avg_diff_days[i] <- as.numeric(mean(diff(sort(dates))))
 }
+
+salary$klient_ndays <- salary$klient_ndays / min(salary$klient_ndays)
+salary$nsessions_per_ndays <-  salary$nsessions/salary$klient_ndays
 #im czesciej tym srednia jest nizsza a spodziewamy sie ze im czesciej tym lepszy klient dla nas
-salary$avg_diff_days <- 1/(salary$avg_diff_days/min(salary$avg_diff_days))
+salary$activity_frequency <- 1/(salary$avg_diff_days/min(salary$avg_diff_days))
+#jezeli sredni czas miedzy iloscia sesji jest krotki to jedna sesja klienta jest "warta" wiecej
+salary$nsessions_per_avgdifftime <- salary$nsessions * salary$activity_frequency
+salary$activity_overall <- log(salary$nsessions_per_avgdifftime * salary$nsessions_per_ndays)
 
 
 ggplot(salary, aes(x = nsessions, y = wynagrodzenie)) + geom_point() + geom_smooth(method =
@@ -90,54 +97,44 @@ ggplot(salary, aes(x = nsessions, y = wynagrodzenie)) + geom_point() + geom_smoo
 #Widać jednak, że klienci z wieksza ilosci sesji sa też klientami nieco lepiej zarabiajacymi
 #Sepcjalnie nie usuwalem brakow danych w wynagrodzeniu po to zeby potem latwo zmergowac z glownym df i przeprowadzić imputacje brakow danych
 
-
-salary$klient_ndays <- salary$klient_ndays / min(salary$klient_ndays)
-salary$nsessions_per_ndays <-  salary$nsessions/salary$klient_ndays
-
-
 ggplot(salary, aes(x = nsessions_per_ndays, y = wynagrodzenie)) + geom_point() + geom_smooth(method =
                                                                                      "loess", se = F)
-
 #zmienna nsessions_per_ndays poza iloscia akcji jakich dokonal klient bierze pod uwage uplyw czasu od pierwszej akcji jakiej dokonal klient czyli to jak dlugo jest naszym klientem
 #widać, że klienci z wyzszym wynagrodzeniem sa bardziej aktywni w naszej aplikacji jednak nalezy zwrocic uwage na to, ze wariancja jest wysoka 
 
-temp <- salary %>% filter(avg_diff_days < 0.2)
-ggplot(temp, aes(x = avg_diff_days, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
+temp <- salary %>% filter(activity_frequency < 0.3)
+ggplot(temp, aes(x = activity_frequency, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 #osoby czesto korzystajace z aplikacji (majace bardzo niska srednio roznice w dniach miedzy jednym a nastepnym uzyciem aplikacji) maja wyzsze wynagrodzenie
-
-#jezeli sredni czas miedzy iloscia sesji jest krotki to jedna sesja klienta jest "warta" wiecej
-salary$nsessions_per_avgdifftime <- salary$nsessions / salary$avg_diff_days
 
 ggplot(salary, aes(x = nsessions_per_avgdifftime, y = wynagrodzenie)) + geom_point() + geom_smooth(method =
                                                                                            "loess", se = F)
-
-salary$activity_overall <- log(salary$nsessions_per_avgdifftime * salary$nsessions_per_ndays)
-
 ggplot(salary, aes(x = activity_overall, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
+
 
 model <- lm(activity_overall~wynagrodzenie,data=salary)
 summary(model)
-plot(model)[1]
-plot(model)[2]
-plot(model)[3]
-plot(model)[4]
-plot(model)[5]
+plot(model, which=1)
+plot(model, which=2)
+plot(model, which=3)
 
-#Zarobki klientow maja statystycznie istotny wplyw na czestotliwosc korzystania z aplikacji
+plot(model, which=4)
+#jest kilka outlierow
+
+plot(model, which=5)
+#Zarobki klientow maja istotny wplyw na czestotliwosc korzystania z aplikacji
 
 
 ggplot(salary, aes(x = session_length_mean, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_median, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_variance, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
+temp <- salary %>% filter(session_length_variance < 600) 
+ggplot(temp, aes(x = session_length_variance, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_90percentile, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
+ggplot(salary, aes(x = session_length_10percentile, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
+#Zarobki klientów nie maja wplyw na czas sprzedzany w appce, srednia, mediana, wariancja i 10 i 90 percentyl spedzanego czasu na to nie wskazuja
 
-model2 <- summary(lm(session_length_mean~wynagrodzenie,data=salary))
-summary(model2)
-plot(model2)[1]
-plot(model2)[2]
-plot(model)[3]
-plot(model)[4]
-plot(model)[5]
+
+
 
 #Zarobki klientow maja statystycznie istotny wplyw na czestotliwosc korzystania z aplikacji
 

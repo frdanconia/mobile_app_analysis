@@ -8,10 +8,6 @@ library(overpass)
 library(osmdata)
 library(sp)
 
-#session$lat[1]
-#session$lon[1]
-
-
 check_oo <- function(lat, lon, meter) {
   lat1 <- as.numeric(lat - (180 / pi) * (meter / 6378137))
   lon1 <-
@@ -31,7 +27,7 @@ check_oo <- function(lat, lon, meter) {
            q1,
            '); \nout body; \n>; \nout skel qt;')
   
-  oo <- overpass_query
+  oo <- overpass_query(qq)
   
   return(oo)
 }
@@ -73,10 +69,7 @@ check_residental_coverage(session$lat[3], session$lon[3], 1000)
 check_residental_coverage(session$lat[4], session$lon[4], 1000)
 check_residental_coverage(session$lat[5], session$lon[5], 1000)
 
-oo <- check_oo(session$lat[1], session$lon[1], 10000)
-
-oo@data
-lo
+oo <- check_oo(session$lat[3], session$lon[3], 5000)
 oo@data$tunnel[is.na(oo@data$tunnel)] <- "no"
 plot(oo,
      col = factor(oo@data$highway),
@@ -89,4 +82,4 @@ legend(
   cex = 0.7
 )
 
-length(oo@data$highway)
+

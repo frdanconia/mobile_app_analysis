@@ -1,0 +1,168 @@
+---
+title: "Zadanie 1 "
+output: html_notebook
+---
+
+```{r}
+library(foreach)
+library(dplyr)
+library(tidyr)
+library(mice)
+library(vroom)
+library(lubridate)
+library(tidyverse)
+library(lmtest)
+library(rgdal)
+library(sp)
+library(spdep)
+library(rgeos)
+library(RColorBrewer)
+library(classInt)
+library(dbscan)
+source("PlotDbscanClustering.R")
+klienci <- vroom("data/klienci.csv")
+session_geo <- vroom("data/session_geo.csv")
+session_info <- vroom("data/session_info.csv")
+klienci[, 1] <- c()
+```
+
+Zad 1.	Ilu firma ma obecnie klientów i jaki procent z nich korzysta z usługi premium?
+
+```{r}
+length(unique(klienci$klient_id))
+length(unique(klienci$klient_id[klienci$czy_w_bazie_klientow == 1]))
+```
+Zakladajac, że baza danych zawiera wszystkich klientow firmy, firma ta ma obecnie 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy oraz 6000 klientów obecnych tylko w analizowanej bazie
+```{r}
+klienci_w_bazie <- klienci[klienci$czy_w_bazie_klientow == 1,]
+sum(klienci_w_bazie$czy_kupil) / nrow(klienci_w_bazie)
+```
+Sposrod 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  18% klientow kupilo uslugi premium
+```{r}
+sum(klienci[klienci$czy_w_bazie_klientow == 0,]$czy_kupil) / nrow(klienci[klienci$czy_w_bazie_klientow == 0,])
+```
+Sposrod 1234 klientów którzy znajduja sie tylko w tej jednej bazie firmy 16.85% klientow kupilo uslugi premium
+```{r}
+sum(klienci$czy_kupil) / nrow(klienci)
+```
+Sposrod 6000 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  17.8% klientow kupilo uslugi premium
+
+
+Zad 2.	Jak ze względu na dane demograficzne, geograficzne i wykorzystywania aplikacji można podzielić użytkowników firmy?
+```{r}
+session <- merge(session_info, session_geo, by = "id_sesji")
+
+eu_nuts <- readOGR(".", "NUTS_RG_01M_2013")
+map <- subset(eu_nuts, STAT_LEVL_ == 3)
+lon_lat <- data.frame(lon = session$lon, lat = session$lat)
+
+coord2nuts <- function(lon_lat) {
+  coordinates(lon_lat) <- ~ lon + lat
+  proj4string(lon_lat) <- CRS("+init=epsg:4326")
+  map@proj4string <- lon_lat@proj4string
+  rt <- over(lon_lat, map)
+  return(rt)
+}
+session$nuts3 <- coord2nuts(lon_lat)$NUTS_ID
+freq <- data.frame(table(session$nuts3))
+freq <- freq[grepl("PL", freq$Var1),]
+colnames(freq) <- c("NUTS_ID", "FREQ")
+
+map@data$NUTS_ID_char <- as.character(map@data$NUTS_ID)
+map@data$country <- substr(map@data$NUTS_ID_char, 1, 2)
+map <- map[map@data$country == "PL", ]
+
+spatial_data <-
+  merge(
+    y = freq,
+    x = map,
+    by.y = "NUTS_ID",
+    by.x = "NUTS_ID",
+    sort = FALSE,
+    all.x = F
+  )
+
+colors <- brewer.pal(6, "Blues")
+brks <- classIntervals(spatial_data$FREQ, 6)
+brks <- brks$brks
+plot(spatial_data,
+     col = colors[findInterval(spatial_data$FREQ, brks, all.inside = TRUE)],
+     axes = F,
+     main = "Ilosc bezwzgledna przypadkow uzycia aplikacji")
+```
+Uzytkownikow firmy mozna podzielic na poszczegolne podregiony NUTS3 w ktorych najczesciej uzywaja aplikacji
+
+W wartosciach bewzglednym aplikacja jest uzywana rzadko w podregionie szczecinsko-pyrzyckim, z kolei jest uzywana czesto w regionie zielonogórskim. 
+
+Nie mowi to jeszcze o popularnosci aplikacji poniewaz nie bierze pod uwage populacji danych regionow.
+
+Widoczny jest takze podzial na Polske pólnocna i poludniowa, na poludniu wiecej osob korzysta z aplikacji niz na polnocy
+```{r}
+barplot(table(klienci$plec), names.arg = c('Mezczyna', 'Kobieta'))
+```
+Na plcie, wsrod klientow jest wiecej mezczyzn niz kobiet, mimo tego kobiety kupuja wiecej uslug premium (patrz. Zad 7.)
+```{r}
+barplot(table(klienci$czy_samochod),
+        names.arg = c('Brak samochodu', 'Posiada samochod'))
+```
+Na fakt posiadania samochodow, wsrod klientow jest wiecej osob posiadajacych samochod
+```{r}
+barplot(table(klienci$czy_mieszkanie),
+        names.arg = c('Brak mieszkania', 'Posiada mieszkania'))
+```
+Na fakt posiadania mieszkania, minimalnie wiecej osob posiada mieszkanie
+
+W Polsce ponad 84% mieszkań wlasnosciowych i nie mamy do czynienia z klientami bardzo mlodymi
+```{r}
+mean(klienci$wiek[!is.na(klienci$wiek)])
+median(klienci$wiek[!is.na(klienci$wiek)])
+```
+Sredni wiek/mediane wieku 50.9/51 lat klientow
+
+Zatem  zaskakujaco duzo sposrod naszych klientow nie posiada mieszkania
+```{r}
+quantile(klienci$wiek, na.rm = TRUE)
+```
+Ze wzgledu na wiek
+25% klientow jest w wieku w wieku od 18 do 25 lat
+
+25% klientow jest w wieku w wieku od 47 do 51 lat
+
+25% klientow jest w wieku w wieku od 51 do 55 lat
+
+25% klientow jest w wieku w wieku od 55 do 73 lat
+
+Aż 50% klientów jest w wieku od 47 do 55 lat
+
+Widac wiec ze bardzo wielu naszych klientow jest w poznych wieku srednim
+
+Srednia wynoi 51 lat i jest bardzo bliska mediany, nie ma wyraznej asymetrii rozkładu wieku klientow
+```{r}
+densityplot(klienci$wiek)
+```
+
+Zad 3. Czy model płatny trafia zgodnie z założeniami do wykształconej grupy odbiorców?
+```{r}
+table(klienci$wyksztalcenie[klienci$czy_kupil == 1])
+mean(klienci$wiek[!is.na(klienci$wiek)])
+median(klienci$wiek[!is.na(klienci$wiek)])
+```
+
+To czy model biznesowy trafia do osob wyksztalconych zalezy od struktury wyksztalcenia w populacji potencjalnych klinetow.
+
+Nie ma ani jednej obserwacji z wyksztalceniem zasadniczym zawodowym, wiec trzeba byloby sie zastanowic czy jest ono kodowane jako podstawowe czy srednie razem z wyksztalceniem srednim zawodowym.
+
+Zakladajac ze grupa potencjalnych klientow odzwierciedla populacje Polski i biorac jednak pod uwage ze sredni wiek klientow wynosi 50,87 lat a mediana 51 lat to fakt, że w populacji klientow, ktorzy wykupili uslugi premium znajduje sie o ponad 40% wiecej osob z wyksztalceniem wyzszym niz podstawowym nalezy uznac za sukces gdyz w populacji Polski osoby w tym wieku kilkukrotnie czesciej maja wyksztalcenie zasadnicze zawodowe.
+
+```{r figurename, echo=FALSE, fig.cap="my caption", out.width = '90%'}
+knitr::include_graphics("wyksztalcenie.png")
+```
+
+Jezeli jednak model biznesowy uwzglednial kierowanie sie przede wszystkim do osob z wyksztalceniem wyzszym to należaloby sie zastanowic czy satysfakcjonuje nas fakt, że mamy dokladnie tyle samo klientow z wyksztalceniem srednim i wyzszym
+
+
+```{r}
+mean(klienci$wiek[!is.na(klienci$wiek)])
+median(klienci$wiek[!is.na(klienci$wiek)])
+```
+

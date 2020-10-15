@@ -1775,9 +1775,7 @@ klienci[, 1] &lt;- c()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<ol style="list-style-type: decimal">
-<li>Ilu firma ma obecnie klientów i jaki procent z nich korzysta z usługi premium?</li>
-</ol>
+<p>Zad 1. Ilu firma ma obecnie klientów i jaki procent z nich korzysta z usługi premium?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGVuZ3RoKHVuaXF1ZShrbGllbmNpJGtsaWVudF9pZCkpXG5sZW5ndGgodW5pcXVlKGtsaWVuY2kka2xpZW50X2lkW2tsaWVuY2kkY3p5X3dfYmF6aWVfa2xpZW50b3cgPT0gMV0pKVxuYGBgIn0= -->
@@ -1789,14 +1787,166 @@ length(unique(klienci$klient_id[klienci$czy_w_bazie_klientow == 1]))</code></pre
 <p>Zakladajac, że baza danych zawiera wszystkich klientow firmy, firma ta ma obecnie 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy oraz 6000 klientów obecnych tylko w analizowanej bazie</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxua2xpZW5jaV93X2JhemllIDwtIGtsaWVuY2lba2xpZW5jaSRjenlfd19iYXppZV9rbGllbnRvdyA9PSAxLF1cbnN1bShrbGllbmNpX3dfYmF6aWUkY3p5X2t1cGlsKSAvIG5yb3coa2xpZW5jaV93X2JhemllKVxuYGBgIn0= -->
+<pre class="r"><code>klienci_w_bazie &lt;- klienci[klienci$czy_w_bazie_klientow == 1,]
+sum(klienci_w_bazie$czy_kupil) / nrow(klienci_w_bazie)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Add a new chunk by clicking the <em>Insert Chunk</em> button on the toolbar or by pressing <em>Ctrl+Alt+I</em>.</p>
-<p>When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the <em>Preview</em> button or press <em>Ctrl+Shift+K</em> to preview the HTML file).</p>
-<p>The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike <em>Knit</em>, <em>Preview</em> does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.</p>
+<p>Sposrod 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy 18% klientow kupilo uslugi premium</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtKGtsaWVuY2lba2xpZW5jaSRjenlfd19iYXppZV9rbGllbnRvdyA9PSAwLF0kY3p5X2t1cGlsKSAvIG5yb3coa2xpZW5jaVtrbGllbmNpJGN6eV93X2JhemllX2tsaWVudG93ID09IDAsXSlcbmBgYCJ9 -->
+<pre class="r"><code>sum(klienci[klienci$czy_w_bazie_klientow == 0,]$czy_kupil) / nrow(klienci[klienci$czy_w_bazie_klientow == 0,])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Sposrod 1234 klientów którzy znajduja sie tylko w tej jednej bazie firmy 16.85% klientow kupilo uslugi premium</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtKGtsaWVuY2kkY3p5X2t1cGlsKSAvIG5yb3coa2xpZW5jaSlcbmBgYCJ9 -->
+<pre class="r"><code>sum(klienci$czy_kupil) / nrow(klienci)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Sposrod 6000 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy 17.8% klientow kupilo uslugi premium</p>
+<p>Zad 2. Jak ze względu na dane demograficzne, geograficzne i wykorzystywania aplikacji można podzielić użytkowników firmy?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2Vzc2lvbiA8LSBtZXJnZShzZXNzaW9uX2luZm8sIHNlc3Npb25fZ2VvLCBieSA9IFwiaWRfc2VzamlcIilcblxuZXVfbnV0cyA8LSByZWFkT0dSKFwiLlwiLCBcIk5VVFNfUkdfMDFNXzIwMTNcIilcbm1hcCA8LSBzdWJzZXQoZXVfbnV0cywgU1RBVF9MRVZMXyA9PSAzKVxubG9uX2xhdCA8LSBkYXRhLmZyYW1lKGxvbiA9IHNlc3Npb24kbG9uLCBsYXQgPSBzZXNzaW9uJGxhdClcblxuY29vcmQybnV0cyA8LSBmdW5jdGlvbihsb25fbGF0KSB7XG4gIGNvb3JkaW5hdGVzKGxvbl9sYXQpIDwtIH4gbG9uICsgbGF0XG4gIHByb2o0c3RyaW5nKGxvbl9sYXQpIDwtIENSUyhcIitpbml0PWVwc2c6NDMyNlwiKVxuICBtYXBAcHJvajRzdHJpbmcgPC0gbG9uX2xhdEBwcm9qNHN0cmluZ1xuICBydCA8LSBvdmVyKGxvbl9sYXQsIG1hcClcbiAgcmV0dXJuKHJ0KVxufVxuc2Vzc2lvbiRudXRzMyA8LSBjb29yZDJudXRzKGxvbl9sYXQpJE5VVFNfSURcbmZyZXEgPC0gZGF0YS5mcmFtZSh0YWJsZShzZXNzaW9uJG51dHMzKSlcbmZyZXEgPC0gZnJlcVtncmVwbChcIlBMXCIsIGZyZXEkVmFyMSksXVxuY29sbmFtZXMoZnJlcSkgPC0gYyhcIk5VVFNfSURcIiwgXCJGUkVRXCIpXG5cbm1hcEBkYXRhJE5VVFNfSURfY2hhciA8LSBhcy5jaGFyYWN0ZXIobWFwQGRhdGEkTlVUU19JRClcbm1hcEBkYXRhJGNvdW50cnkgPC0gc3Vic3RyKG1hcEBkYXRhJE5VVFNfSURfY2hhciwgMSwgMilcbm1hcCA8LSBtYXBbbWFwQGRhdGEkY291bnRyeSA9PSBcIlBMXCIsIF1cblxuc3BhdGlhbF9kYXRhIDwtXG4gIG1lcmdlKFxuICAgIHkgPSBmcmVxLFxuICAgIHggPSBtYXAsXG4gICAgYnkueSA9IFwiTlVUU19JRFwiLFxuICAgIGJ5LnggPSBcIk5VVFNfSURcIixcbiAgICBzb3J0ID0gRkFMU0UsXG4gICAgYWxsLnggPSBGXG4gIClcblxuY29sb3JzIDwtIGJyZXdlci5wYWwoNiwgXCJCbHVlc1wiKVxuYnJrcyA8LSBjbGFzc0ludGVydmFscyhzcGF0aWFsX2RhdGEkRlJFUSwgNilcbmJya3MgPC0gYnJrcyRicmtzXG5wbG90KHNwYXRpYWxfZGF0YSxcbiAgICAgY29sID0gY29sb3JzW2ZpbmRJbnRlcnZhbChzcGF0aWFsX2RhdGEkRlJFUSwgYnJrcywgYWxsLmluc2lkZSA9IFRSVUUpXSxcbiAgICAgYXhlcyA9IEYsXG4gICAgIG1haW4gPSBcIklsb3NjIGJlend6Z2xlZG5hIHByenlwYWRrb3cgdXp5Y2lhIGFwbGlrYWNqaVwiKVxuYGBgIn0= -->
+<pre class="r"><code>session &lt;- merge(session_info, session_geo, by = &quot;id_sesji&quot;)
+
+eu_nuts &lt;- readOGR(&quot;.&quot;, &quot;NUTS_RG_01M_2013&quot;)
+map &lt;- subset(eu_nuts, STAT_LEVL_ == 3)
+lon_lat &lt;- data.frame(lon = session$lon, lat = session$lat)
+
+coord2nuts &lt;- function(lon_lat) {
+  coordinates(lon_lat) &lt;- ~ lon + lat
+  proj4string(lon_lat) &lt;- CRS(&quot;+init=epsg:4326&quot;)
+  map@proj4string &lt;- lon_lat@proj4string
+  rt &lt;- over(lon_lat, map)
+  return(rt)
+}
+session$nuts3 &lt;- coord2nuts(lon_lat)$NUTS_ID
+freq &lt;- data.frame(table(session$nuts3))
+freq &lt;- freq[grepl(&quot;PL&quot;, freq$Var1),]
+colnames(freq) &lt;- c(&quot;NUTS_ID&quot;, &quot;FREQ&quot;)
+
+map@data$NUTS_ID_char &lt;- as.character(map@data$NUTS_ID)
+map@data$country &lt;- substr(map@data$NUTS_ID_char, 1, 2)
+map &lt;- map[map@data$country == &quot;PL&quot;, ]
+
+spatial_data &lt;-
+  merge(
+    y = freq,
+    x = map,
+    by.y = &quot;NUTS_ID&quot;,
+    by.x = &quot;NUTS_ID&quot;,
+    sort = FALSE,
+    all.x = F
+  )
+
+colors &lt;- brewer.pal(6, &quot;Blues&quot;)
+brks &lt;- classIntervals(spatial_data$FREQ, 6)
+brks &lt;- brks$brks
+plot(spatial_data,
+     col = colors[findInterval(spatial_data$FREQ, brks, all.inside = TRUE)],
+     axes = F,
+     main = &quot;Ilosc bezwzgledna przypadkow uzycia aplikacji&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Uzytkownikow firmy mozna podzielic na poszczegolne podregiony NUTS3 w ktorych najczesciej uzywaja aplikacji</p>
+<p>W wartosciach bewzglednym aplikacja jest uzywana rzadko w podregionie szczecinsko-pyrzyckim, z kolei jest uzywana czesto w regionie zielonogórskim.</p>
+<p>Nie mowi to jeszcze o popularnosci aplikacji poniewaz nie bierze pod uwage populacji danych regionow.</p>
+<p>Widoczny jest takze podzial na Polske pólnocna i poludniowa, na poludniu wiecej osob korzysta z aplikacji niz na polnocy</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFycGxvdCh0YWJsZShrbGllbmNpJHBsZWMpLCBuYW1lcy5hcmcgPSBjKCdNZXpjenluYScsICdLb2JpZXRhJykpXG5gYGAifQ== -->
+<pre class="r"><code>barplot(table(klienci$plec), names.arg = c(&#39;Mezczyna&#39;, &#39;Kobieta&#39;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Na plcie, wsrod klientow jest wiecej mezczyzn niz kobiet, mimo tego kobiety kupuja wiecej uslug premium (patrz. Zad 7.)</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFycGxvdCh0YWJsZShrbGllbmNpJGN6eV9zYW1vY2hvZCksXG4gICAgICAgIG5hbWVzLmFyZyA9IGMoJ0JyYWsgc2Ftb2Nob2R1JywgJ1Bvc2lhZGEgc2Ftb2Nob2QnKSlcbmBgYCJ9 -->
+<pre class="r"><code>barplot(table(klienci$czy_samochod),
+        names.arg = c(&#39;Brak samochodu&#39;, &#39;Posiada samochod&#39;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Na fakt posiadania samochodow, wsrod klientow jest wiecej osob posiadajacych samochod</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFycGxvdCh0YWJsZShrbGllbmNpJGN6eV9taWVzemthbmllKSxcbiAgICAgICAgbmFtZXMuYXJnID0gYygnQnJhayBtaWVzemthbmlhJywgJ1Bvc2lhZGEgbWllc3prYW5pYScpKVxuYGBgIn0= -->
+<pre class="r"><code>barplot(table(klienci$czy_mieszkanie),
+        names.arg = c(&#39;Brak mieszkania&#39;, &#39;Posiada mieszkania&#39;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Na fakt posiadania mieszkania, minimalnie wiecej osob posiada mieszkanie</p>
+<p>W Polsce ponad 84% mieszkań wlasnosciowych i nie mamy do czynienia z klientami bardzo mlodymi</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbihrbGllbmNpJHdpZWtbIWlzLm5hKGtsaWVuY2kkd2llayldKVxubWVkaWFuKGtsaWVuY2kkd2lla1shaXMubmEoa2xpZW5jaSR3aWVrKV0pXG5gYGAifQ== -->
+<pre class="r"><code>mean(klienci$wiek[!is.na(klienci$wiek)])
+median(klienci$wiek[!is.na(klienci$wiek)])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Sredni wiek/mediane wieku 50.9/51 lat klientow</p>
+<p>Zatem zaskakujaco duzo sposrod naszych klientow nie posiada mieszkania</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucXVhbnRpbGUoa2xpZW5jaSR3aWVrLCBuYS5ybSA9IFRSVUUpXG5gYGAifQ== -->
+<pre class="r"><code>quantile(klienci$wiek, na.rm = TRUE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Ze wzgledu na wiek 25% klientow jest w wieku w wieku od 18 do 25 lat</p>
+<p>25% klientow jest w wieku w wieku od 47 do 51 lat</p>
+<p>25% klientow jest w wieku w wieku od 51 do 55 lat</p>
+<p>25% klientow jest w wieku w wieku od 55 do 73 lat</p>
+<p>Aż 50% klientów jest w wieku od 47 do 55 lat</p>
+<p>Widac wiec ze bardzo wielu naszych klientow jest w poznych wieku srednim</p>
+<p>Srednia wynoi 51 lat i jest bardzo bliska mediany, nie ma wyraznej asymetrii rozkładu wieku klientow</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVuc2l0eXBsb3Qoa2xpZW5jaSR3aWVrKVxuYGBgIn0= -->
+<pre class="r"><code>densityplot(klienci$wiek)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Zad 3. Czy model płatny trafia zgodnie z założeniami do wykształconej grupy odbiorców?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUoa2xpZW5jaSR3eWtzenRhbGNlbmllW2tsaWVuY2kkY3p5X2t1cGlsID09IDFdKVxubWVhbihrbGllbmNpJHdpZWtbIWlzLm5hKGtsaWVuY2kkd2llayldKVxubWVkaWFuKGtsaWVuY2kkd2lla1shaXMubmEoa2xpZW5jaSR3aWVrKV0pXG5gYGAifQ== -->
+<pre class="r"><code>table(klienci$wyksztalcenie[klienci$czy_kupil == 1])
+mean(klienci$wiek[!is.na(klienci$wiek)])
+median(klienci$wiek[!is.na(klienci$wiek)])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>To czy model biznesowy trafia do osob wyksztalconych zalezy od struktury wyksztalcenia w populacji potencjalnych klinetow.</p>
+<p>Nie ma ani jednej obserwacji z wyksztalceniem zasadniczym zawodowym, wiec trzeba byloby sie zastanowic czy jest ono kodowane jako podstawowe czy srednie razem z wyksztalceniem srednim zawodowym.</p>
+<p>Zakladajac ze grupa potencjalnych klientow odzwierciedla populacje Polski i biorac jednak pod uwage ze sredni wiek klientow wynosi 50,87 lat a mediana 51 lat to fakt, że w populacji klientow, ktorzy wykupili uslugi premium znajduje sie o ponad 40% wiecej osob z wyksztalceniem wyzszym niz podstawowym nalezy uznac za sukces gdyz w populacji Polski osoby w tym wieku kilkukrotnie czesciej maja wyksztalcenie zasadnicze zawodowe.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Jezeli jednak model biznesowy uwzglednial kierowanie sie przede wszystkim do osob z wyksztalceniem wyzszym to należaloby sie zastanowic czy satysfakcjonuje nas fakt, że mamy dokladnie tyle samo klientow z wyksztalceniem srednim i wyzszym</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbihrbGllbmNpJHdpZWtbIWlzLm5hKGtsaWVuY2kkd2llayldKVxubWVkaWFuKGtsaWVuY2kkd2lla1shaXMubmEoa2xpZW5jaSR3aWVrKV0pXG5gYGAifQ== -->
+<pre class="r"><code>mean(klienci$wiek[!is.na(klienci$wiek)])
+median(klienci$wiek[!is.na(klienci$wiek)])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlphZGFuaWUgMSAiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkoZm9yZWFjaCkNCmxpYnJhcnkoZHBseXIpDQpsaWJyYXJ5KHRpZHlyKQ0KbGlicmFyeShtaWNlKQ0KbGlicmFyeSh2cm9vbSkNCmxpYnJhcnkobHVicmlkYXRlKQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KGxtdGVzdCkNCmxpYnJhcnkocmdkYWwpDQpsaWJyYXJ5KHNwKQ0KbGlicmFyeShzcGRlcCkNCmxpYnJhcnkocmdlb3MpDQpsaWJyYXJ5KFJDb2xvckJyZXdlcikNCmxpYnJhcnkoY2xhc3NJbnQpDQpsaWJyYXJ5KGRic2NhbikNCnNvdXJjZSgiUGxvdERic2NhbkNsdXN0ZXJpbmcuUiIpDQprbGllbmNpIDwtIHZyb29tKCJkYXRhL2tsaWVuY2kuY3N2IikNCnNlc3Npb25fZ2VvIDwtIHZyb29tKCJkYXRhL3Nlc3Npb25fZ2VvLmNzdiIpDQpzZXNzaW9uX2luZm8gPC0gdnJvb20oImRhdGEvc2Vzc2lvbl9pbmZvLmNzdiIpDQprbGllbmNpWywgMV0gPC0gYygpDQpgYGANCg0KMS4JSWx1IGZpcm1hIG1hIG9iZWNuaWUga2xpZW50w7N3IGkgamFraSBwcm9jZW50IHogbmljaCBrb3J6eXN0YSB6IHVzxYJ1Z2kgcHJlbWl1bT8NCg0KYGBge3J9DQpsZW5ndGgodW5pcXVlKGtsaWVuY2kka2xpZW50X2lkKSkNCmxlbmd0aCh1bmlxdWUoa2xpZW5jaSRrbGllbnRfaWRba2xpZW5jaSRjenlfd19iYXppZV9rbGllbnRvdyA9PSAxXSkpDQpgYGANClpha2xhZGFqYWMsIMW8ZSBiYXphIGRhbnljaCB6YXdpZXJhIHdzenlzdGtpY2gga2xpZW50b3cgZmlybXksIGZpcm1hIHRhIG1hIG9iZWNuaWUgNDc2NiBrbGllbnTDs3cga3TDs3J6eSB6bmFqZHVqYSBzaWUgcHJ6eW5ham1uaWVqIHcgMiBiYXphY2ggZGFueWNoIGZpcm15IG9yYXogNjAwMCBrbGllbnTDs3cgb2JlY255Y2ggdHlsa28gdyBhbmFsaXpvd2FuZWogYmF6aWUNCg0KYGBge3J9DQoNCmBgYA0KDQoNCkFkZCBhIG5ldyBjaHVuayBieSBjbGlja2luZyB0aGUgKkluc2VydCBDaHVuayogYnV0dG9uIG9uIHRoZSB0b29sYmFyIG9yIGJ5IHByZXNzaW5nICpDdHJsK0FsdCtJKi4NCg0KV2hlbiB5b3Ugc2F2ZSB0aGUgbm90ZWJvb2ssIGFuIEhUTUwgZmlsZSBjb250YWluaW5nIHRoZSBjb2RlIGFuZCBvdXRwdXQgd2lsbCBiZSBzYXZlZCBhbG9uZ3NpZGUgaXQgKGNsaWNrIHRoZSAqUHJldmlldyogYnV0dG9uIG9yIHByZXNzICpDdHJsK1NoaWZ0K0sqIHRvIHByZXZpZXcgdGhlIEhUTUwgZmlsZSkuDQoNClRoZSBwcmV2aWV3IHNob3dzIHlvdSBhIHJlbmRlcmVkIEhUTUwgY29weSBvZiB0aGUgY29udGVudHMgb2YgdGhlIGVkaXRvci4gQ29uc2VxdWVudGx5LCB1bmxpa2UgKktuaXQqLCAqUHJldmlldyogZG9lcyBub3QgcnVuIGFueSBSIGNvZGUgY2h1bmtzLiBJbnN0ZWFkLCB0aGUgb3V0cHV0IG9mIHRoZSBjaHVuayB3aGVuIGl0IHdhcyBsYXN0IHJ1biBpbiB0aGUgZWRpdG9yIGlzIGRpc3BsYXllZC4NCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlphZGFuaWUgMSAiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkoZm9yZWFjaCkNCmxpYnJhcnkoZHBseXIpDQpsaWJyYXJ5KHRpZHlyKQ0KbGlicmFyeShtaWNlKQ0KbGlicmFyeSh2cm9vbSkNCmxpYnJhcnkobHVicmlkYXRlKQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KGxtdGVzdCkNCmxpYnJhcnkocmdkYWwpDQpsaWJyYXJ5KHNwKQ0KbGlicmFyeShzcGRlcCkNCmxpYnJhcnkocmdlb3MpDQpsaWJyYXJ5KFJDb2xvckJyZXdlcikNCmxpYnJhcnkoY2xhc3NJbnQpDQpsaWJyYXJ5KGRic2NhbikNCnNvdXJjZSgiUGxvdERic2NhbkNsdXN0ZXJpbmcuUiIpDQprbGllbmNpIDwtIHZyb29tKCJkYXRhL2tsaWVuY2kuY3N2IikNCnNlc3Npb25fZ2VvIDwtIHZyb29tKCJkYXRhL3Nlc3Npb25fZ2VvLmNzdiIpDQpzZXNzaW9uX2luZm8gPC0gdnJvb20oImRhdGEvc2Vzc2lvbl9pbmZvLmNzdiIpDQprbGllbmNpWywgMV0gPC0gYygpDQpgYGANCg0KWmFkIDEuCUlsdSBmaXJtYSBtYSBvYmVjbmllIGtsaWVudMOzdyBpIGpha2kgcHJvY2VudCB6IG5pY2gga29yenlzdGEgeiB1c8WCdWdpIHByZW1pdW0/DQoNCmBgYHtyfQ0KbGVuZ3RoKHVuaXF1ZShrbGllbmNpJGtsaWVudF9pZCkpDQpsZW5ndGgodW5pcXVlKGtsaWVuY2kka2xpZW50X2lkW2tsaWVuY2kkY3p5X3dfYmF6aWVfa2xpZW50b3cgPT0gMV0pKQ0KYGBgDQpaYWtsYWRhamFjLCDFvGUgYmF6YSBkYW55Y2ggemF3aWVyYSB3c3p5c3RraWNoIGtsaWVudG93IGZpcm15LCBmaXJtYSB0YSBtYSBvYmVjbmllIDQ3NjYga2xpZW50w7N3IGt0w7Nyenkgem5hamR1amEgc2llIHByenluYWptbmllaiB3IDIgYmF6YWNoIGRhbnljaCBmaXJteSBvcmF6IDYwMDAga2xpZW50w7N3IG9iZWNueWNoIHR5bGtvIHcgYW5hbGl6b3dhbmVqIGJhemllDQpgYGB7cn0NCmtsaWVuY2lfd19iYXppZSA8LSBrbGllbmNpW2tsaWVuY2kkY3p5X3dfYmF6aWVfa2xpZW50b3cgPT0gMSxdDQpzdW0oa2xpZW5jaV93X2JhemllJGN6eV9rdXBpbCkgLyBucm93KGtsaWVuY2lfd19iYXppZSkNCmBgYA0KU3Bvc3JvZCA0NzY2IGtsaWVudMOzdyBrdMOzcnp5IHpuYWpkdWphIHNpZSBwcnp5bmFqbW5pZWogdyAyIGJhemFjaCBkYW55Y2ggZmlybXkgIDE4JSBrbGllbnRvdyBrdXBpbG8gdXNsdWdpIHByZW1pdW0NCmBgYHtyfQ0Kc3VtKGtsaWVuY2lba2xpZW5jaSRjenlfd19iYXppZV9rbGllbnRvdyA9PSAwLF0kY3p5X2t1cGlsKSAvIG5yb3coa2xpZW5jaVtrbGllbmNpJGN6eV93X2JhemllX2tsaWVudG93ID09IDAsXSkNCmBgYA0KU3Bvc3JvZCAxMjM0IGtsaWVudMOzdyBrdMOzcnp5IHpuYWpkdWphIHNpZSB0eWxrbyB3IHRlaiBqZWRuZWogYmF6aWUgZmlybXkgMTYuODUlIGtsaWVudG93IGt1cGlsbyB1c2x1Z2kgcHJlbWl1bQ0KYGBge3J9DQpzdW0oa2xpZW5jaSRjenlfa3VwaWwpIC8gbnJvdyhrbGllbmNpKQ0KYGBgDQpTcG9zcm9kIDYwMDAga2xpZW50w7N3IGt0w7Nyenkgem5hamR1amEgc2llIHByenluYWptbmllaiB3IDIgYmF6YWNoIGRhbnljaCBmaXJteSAgMTcuOCUga2xpZW50b3cga3VwaWxvIHVzbHVnaSBwcmVtaXVtDQoNCg0KWmFkIDIuCUphayB6ZSB3emdsxJlkdSBuYSBkYW5lIGRlbW9ncmFmaWN6bmUsIGdlb2dyYWZpY3puZSBpIHd5a29yenlzdHl3YW5pYSBhcGxpa2FjamkgbW/FvG5hIHBvZHppZWxpxIcgdcW8eXRrb3duaWvDs3cgZmlybXk/DQpgYGB7cn0NCnNlc3Npb24gPC0gbWVyZ2Uoc2Vzc2lvbl9pbmZvLCBzZXNzaW9uX2dlbywgYnkgPSAiaWRfc2VzamkiKQ0KDQpldV9udXRzIDwtIHJlYWRPR1IoIi4iLCAiTlVUU19SR18wMU1fMjAxMyIpDQptYXAgPC0gc3Vic2V0KGV1X251dHMsIFNUQVRfTEVWTF8gPT0gMykNCmxvbl9sYXQgPC0gZGF0YS5mcmFtZShsb24gPSBzZXNzaW9uJGxvbiwgbGF0ID0gc2Vzc2lvbiRsYXQpDQoNCmNvb3JkMm51dHMgPC0gZnVuY3Rpb24obG9uX2xhdCkgew0KICBjb29yZGluYXRlcyhsb25fbGF0KSA8LSB+IGxvbiArIGxhdA0KICBwcm9qNHN0cmluZyhsb25fbGF0KSA8LSBDUlMoIitpbml0PWVwc2c6NDMyNiIpDQogIG1hcEBwcm9qNHN0cmluZyA8LSBsb25fbGF0QHByb2o0c3RyaW5nDQogIHJ0IDwtIG92ZXIobG9uX2xhdCwgbWFwKQ0KICByZXR1cm4ocnQpDQp9DQpzZXNzaW9uJG51dHMzIDwtIGNvb3JkMm51dHMobG9uX2xhdCkkTlVUU19JRA0KZnJlcSA8LSBkYXRhLmZyYW1lKHRhYmxlKHNlc3Npb24kbnV0czMpKQ0KZnJlcSA8LSBmcmVxW2dyZXBsKCJQTCIsIGZyZXEkVmFyMSksXQ0KY29sbmFtZXMoZnJlcSkgPC0gYygiTlVUU19JRCIsICJGUkVRIikNCg0KbWFwQGRhdGEkTlVUU19JRF9jaGFyIDwtIGFzLmNoYXJhY3RlcihtYXBAZGF0YSROVVRTX0lEKQ0KbWFwQGRhdGEkY291bnRyeSA8LSBzdWJzdHIobWFwQGRhdGEkTlVUU19JRF9jaGFyLCAxLCAyKQ0KbWFwIDwtIG1hcFttYXBAZGF0YSRjb3VudHJ5ID09ICJQTCIsIF0NCg0Kc3BhdGlhbF9kYXRhIDwtDQogIG1lcmdlKA0KICAgIHkgPSBmcmVxLA0KICAgIHggPSBtYXAsDQogICAgYnkueSA9ICJOVVRTX0lEIiwNCiAgICBieS54ID0gIk5VVFNfSUQiLA0KICAgIHNvcnQgPSBGQUxTRSwNCiAgICBhbGwueCA9IEYNCiAgKQ0KDQpjb2xvcnMgPC0gYnJld2VyLnBhbCg2LCAiQmx1ZXMiKQ0KYnJrcyA8LSBjbGFzc0ludGVydmFscyhzcGF0aWFsX2RhdGEkRlJFUSwgNikNCmJya3MgPC0gYnJrcyRicmtzDQpwbG90KHNwYXRpYWxfZGF0YSwNCiAgICAgY29sID0gY29sb3JzW2ZpbmRJbnRlcnZhbChzcGF0aWFsX2RhdGEkRlJFUSwgYnJrcywgYWxsLmluc2lkZSA9IFRSVUUpXSwNCiAgICAgYXhlcyA9IEYsDQogICAgIG1haW4gPSAiSWxvc2MgYmV6d3pnbGVkbmEgcHJ6eXBhZGtvdyB1enljaWEgYXBsaWthY2ppIikNCmBgYA0KVXp5dGtvd25pa293IGZpcm15IG1vem5hIHBvZHppZWxpYyBuYSBwb3N6Y3plZ29sbmUgcG9kcmVnaW9ueSBOVVRTMyB3IGt0b3J5Y2ggbmFqY3plc2NpZWogdXp5d2FqYSBhcGxpa2FjamkNCg0KVyB3YXJ0b3NjaWFjaCBiZXd6Z2xlZG55bSBhcGxpa2FjamEgamVzdCB1enl3YW5hIHJ6YWRrbyB3IHBvZHJlZ2lvbmllIHN6Y3plY2luc2tvLXB5cnp5Y2tpbSwgeiBrb2xlaSBqZXN0IHV6eXdhbmEgY3plc3RvIHcgcmVnaW9uaWUgemllbG9ub2fDs3Jza2ltLiANCg0KTmllIG1vd2kgdG8gamVzemN6ZSBvIHBvcHVsYXJub3NjaSBhcGxpa2FjamkgcG9uaWV3YXogbmllIGJpZXJ6ZSBwb2QgdXdhZ2UgcG9wdWxhY2ppIGRhbnljaCByZWdpb25vdy4NCg0KV2lkb2N6bnkgamVzdCB0YWt6ZSBwb2R6aWFsIG5hIFBvbHNrZSBww7Nsbm9jbmEgaSBwb2x1ZG5pb3dhLCBuYSBwb2x1ZG5pdSB3aWVjZWogb3NvYiBrb3J6eXN0YSB6IGFwbGlrYWNqaSBuaXogbmEgcG9sbm9jeQ0KYGBge3J9DQpiYXJwbG90KHRhYmxlKGtsaWVuY2kkcGxlYyksIG5hbWVzLmFyZyA9IGMoJ01lemN6eW5hJywgJ0tvYmlldGEnKSkNCmBgYA0KTmEgcGxjaWUsIHdzcm9kIGtsaWVudG93IGplc3Qgd2llY2VqIG1lemN6eXpuIG5peiBrb2JpZXQsIG1pbW8gdGVnbyBrb2JpZXR5IGt1cHVqYSB3aWVjZWogdXNsdWcgcHJlbWl1bSAocGF0cnouIFphZCA3LikNCmBgYHtyfQ0KYmFycGxvdCh0YWJsZShrbGllbmNpJGN6eV9zYW1vY2hvZCksDQogICAgICAgIG5hbWVzLmFyZyA9IGMoJ0JyYWsgc2Ftb2Nob2R1JywgJ1Bvc2lhZGEgc2Ftb2Nob2QnKSkNCmBgYA0KTmEgZmFrdCBwb3NpYWRhbmlhIHNhbW9jaG9kb3csIHdzcm9kIGtsaWVudG93IGplc3Qgd2llY2VqIG9zb2IgcG9zaWFkYWphY3ljaCBzYW1vY2hvZA0KYGBge3J9DQpiYXJwbG90KHRhYmxlKGtsaWVuY2kkY3p5X21pZXN6a2FuaWUpLA0KICAgICAgICBuYW1lcy5hcmcgPSBjKCdCcmFrIG1pZXN6a2FuaWEnLCAnUG9zaWFkYSBtaWVzemthbmlhJykpDQpgYGANCk5hIGZha3QgcG9zaWFkYW5pYSBtaWVzemthbmlhLCBtaW5pbWFsbmllIHdpZWNlaiBvc29iIHBvc2lhZGEgbWllc3prYW5pZQ0KDQpXIFBvbHNjZSBwb25hZCA4NCUgbWllc3prYcWEIHdsYXNub3NjaW93eWNoIGkgbmllIG1hbXkgZG8gY3p5bmllbmlhIHoga2xpZW50YW1pIGJhcmR6byBtbG9keW1pDQpgYGB7cn0NCm1lYW4oa2xpZW5jaSR3aWVrWyFpcy5uYShrbGllbmNpJHdpZWspXSkNCm1lZGlhbihrbGllbmNpJHdpZWtbIWlzLm5hKGtsaWVuY2kkd2llayldKQ0KYGBgDQpTcmVkbmkgd2llay9tZWRpYW5lIHdpZWt1IDUwLjkvNTEgbGF0IGtsaWVudG93DQoNClphdGVtICB6YXNrYWt1amFjbyBkdXpvIHNwb3Nyb2QgbmFzenljaCBrbGllbnRvdyBuaWUgcG9zaWFkYSBtaWVzemthbmlhDQpgYGB7cn0NCnF1YW50aWxlKGtsaWVuY2kkd2llaywgbmEucm0gPSBUUlVFKQ0KYGBgDQpaZSB3emdsZWR1IG5hIHdpZWsNCjI1JSBrbGllbnRvdyBqZXN0IHcgd2lla3UgdyB3aWVrdSBvZCAxOCBkbyAyNSBsYXQNCg0KMjUlIGtsaWVudG93IGplc3QgdyB3aWVrdSB3IHdpZWt1IG9kIDQ3IGRvIDUxIGxhdA0KDQoyNSUga2xpZW50b3cgamVzdCB3IHdpZWt1IHcgd2lla3Ugb2QgNTEgZG8gNTUgbGF0DQoNCjI1JSBrbGllbnRvdyBqZXN0IHcgd2lla3UgdyB3aWVrdSBvZCA1NSBkbyA3MyBsYXQNCg0KQcW8IDUwJSBrbGllbnTDs3cgamVzdCB3IHdpZWt1IG9kIDQ3IGRvIDU1IGxhdA0KDQpXaWRhYyB3aWVjIHplIGJhcmR6byB3aWVsdSBuYXN6eWNoIGtsaWVudG93IGplc3QgdyBwb3pueWNoIHdpZWt1IHNyZWRuaW0NCg0KU3JlZG5pYSB3eW5vaSA1MSBsYXQgaSBqZXN0IGJhcmR6byBibGlza2EgbWVkaWFueSwgbmllIG1hIHd5cmF6bmVqIGFzeW1ldHJpaSByb3prxYJhZHUgd2lla3Uga2xpZW50b3cNCmBgYHtyfQ0KZGVuc2l0eXBsb3Qoa2xpZW5jaSR3aWVrKQ0KYGBgDQoNClphZCAzLiBDenkgbW9kZWwgcMWCYXRueSB0cmFmaWEgemdvZG5pZSB6IHphxYJvxbxlbmlhbWkgZG8gd3lrc3p0YcWCY29uZWogZ3J1cHkgb2RiaW9yY8Ozdz8NCmBgYHtyfQ0KdGFibGUoa2xpZW5jaSR3eWtzenRhbGNlbmllW2tsaWVuY2kkY3p5X2t1cGlsID09IDFdKQ0KbWVhbihrbGllbmNpJHdpZWtbIWlzLm5hKGtsaWVuY2kkd2llayldKQ0KbWVkaWFuKGtsaWVuY2kkd2lla1shaXMubmEoa2xpZW5jaSR3aWVrKV0pDQpgYGANCg0KVG8gY3p5IG1vZGVsIGJpem5lc293eSB0cmFmaWEgZG8gb3NvYiB3eWtzenRhbGNvbnljaCB6YWxlenkgb2Qgc3RydWt0dXJ5IHd5a3N6dGFsY2VuaWEgdyBwb3B1bGFjamkgcG90ZW5jamFsbnljaCBrbGluZXRvdy4NCg0KTmllIG1hIGFuaSBqZWRuZWogb2JzZXJ3YWNqaSB6IHd5a3N6dGFsY2VuaWVtIHphc2FkbmljenltIHphd29kb3d5bSwgd2llYyB0cnplYmEgYnlsb2J5IHNpZSB6YXN0YW5vd2ljIGN6eSBqZXN0IG9ubyBrb2Rvd2FuZSBqYWtvIHBvZHN0YXdvd2UgY3p5IHNyZWRuaWUgcmF6ZW0geiB3eWtzenRhbGNlbmllbSBzcmVkbmltIHphd29kb3d5bS4NCg0KWmFrbGFkYWphYyB6ZSBncnVwYSBwb3RlbmNqYWxueWNoIGtsaWVudG93IG9kendpZXJjaWVkbGEgcG9wdWxhY2plIFBvbHNraSBpIGJpb3JhYyBqZWRuYWsgcG9kIHV3YWdlIHplIHNyZWRuaSB3aWVrIGtsaWVudG93IHd5bm9zaSA1MCw4NyBsYXQgYSBtZWRpYW5hIDUxIGxhdCB0byBmYWt0LCDFvGUgdyBwb3B1bGFjamkga2xpZW50b3csIGt0b3J6eSB3eWt1cGlsaSB1c2x1Z2kgcHJlbWl1bSB6bmFqZHVqZSBzaWUgbyBwb25hZCA0MCUgd2llY2VqIG9zb2IgeiB3eWtzenRhbGNlbmllbSB3eXpzenltIG5peiBwb2RzdGF3b3d5bSBuYWxlenkgdXpuYWMgemEgc3VrY2VzIGdkeXogdyBwb3B1bGFjamkgUG9sc2tpIG9zb2J5IHcgdHltIHdpZWt1IGtpbGt1a3JvdG5pZSBjemVzY2llaiBtYWphIHd5a3N6dGFsY2VuaWUgemFzYWRuaWN6ZSB6YXdvZG93ZS4NCg0KYGBge3IgZmlndXJlbmFtZSwgZWNobz1GQUxTRSwgZmlnLmNhcD0ibXkgY2FwdGlvbiIsIG91dC53aWR0aCA9ICc5MCUnfQ0Ka25pdHI6OmluY2x1ZGVfZ3JhcGhpY3MoInd5a3N6dGFsY2VuaWUucG5nIikNCmBgYA0KDQpKZXplbGkgamVkbmFrIG1vZGVsIGJpem5lc293eSB1d3pnbGVkbmlhbCBraWVyb3dhbmllIHNpZSBwcnplZGUgd3N6eXN0a2ltIGRvIG9zb2IgeiB3eWtzenRhbGNlbmllbSB3eXpzenltIHRvIG5hbGXFvGFsb2J5IHNpZSB6YXN0YW5vd2ljIGN6eSBzYXR5c2Zha2Nqb251amUgbmFzIGZha3QsIMW8ZSBtYW15IGRva2xhZG5pZSB0eWxlIHNhbW8ga2xpZW50b3cgeiB3eWtzenRhbGNlbmllbSBzcmVkbmltIGkgd3l6c3p5bQ0KDQoNCmBgYHtyfQ0KbWVhbihrbGllbmNpJHdpZWtbIWlzLm5hKGtsaWVuY2kkd2llayldKQ0KbWVkaWFuKGtsaWVuY2kkd2lla1shaXMubmEoa2xpZW5jaSR3aWVrKV0pDQpgYGANCg0K</div>
 
 
 

@@ -1,0 +1,13 @@
+"0","klienci_clustering <- klienci"
+"2","Warning messages:
+"
+"2","1: Unknown or uninitialised column: `first_day`. 
+"
+"2","2: Unknown or uninitialised column: `nloc`. 
+"
+"0","klienci_clustering$first_day <- c()"
+"0","onehotmatrix <- model.matrix(object = czy_kupil ~ . - 1, data = klienci_clustering)"
+"0","source(""PlotDbscanClustering.R"")"
+"0","PlotDbscanClustering(onehotmatrix,'plec')"
+"2","Error in colMaxs(abs(onehotmatrix)) : could not find function ""colMaxs""
+"

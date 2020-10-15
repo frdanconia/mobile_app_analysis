@@ -283,3 +283,7 @@ plot(spatial_data,
 
 
 #8.	Czy klienci korzystają z aplikacji w jednym miejscu, czy może w większej liczbie miejsc? Jaki jest średni rozrzut odległości w wykorzystaniu aplikacji?
+
+for(i in 1:length()){
+  
+}

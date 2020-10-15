@@ -7,6 +7,9 @@ library(sp)
 library(spdep)
 library(rgeos)
 library(foreach)
+library(dplyr)
+library(tidyr)
+library(mice)
 
 klienci <- vroom("data/klienci.csv")
 session_geo <- vroom("data/session_geo.csv")
@@ -45,28 +48,47 @@ coord2nuts <- function(lon_lat) {
 }
 
 session$nuts3 <- coord2nuts(lon_lat)$NUTS_ID
+freq <- data.frame(table(session$nuts3))
+freq <- freq[grepl("PL",freq$Var1),]
 
-
-
-
-
-loc <- data.frame(geo_mean$lon_mean,geo_mean$lat_mean)
-eu_nuts <- readOGR(".", "NUTS_RG_01M_2013")
-map <- subset(eu_nuts, STAT_LEVL_ == 3)
-proj4string(map)
-coordinates(loc)<-~lon+lat
-proj4string(loc)<-CRS("+init=epsg:4326")
-data <- spTransform(loc, proj4string(map))
-
-#select Poland
 map@data$NUTS_ID_char <- as.character(map@data$NUTS_ID)
 map@data$country <- substr(map@data$NUTS_ID_char, 1, 2) 
 map <- map[map@data$country == "PL", ]
-plot(map)
-points(data, pch = 10, col = "darkgoldenrod")
 
+spatial_data <- merge(y = freq, x = map, by.y = "NUTS_ID", by.x = "NUTS_ID", sort = FALSE, all.x = F)
+colors <- brewer.pal(6, "Blues") 
+brks <- classIntervals(spatial_data$freq, 6)
+brks <- brks$brks
+plot(spatial_data, col = colors[findInterval(spatial_data$freq, brks,all.inside = TRUE)], axes = F, main = "Ilosc bezwzgledna przypadkow uzycia aplikacji")
 
+#2. Uzytkownikow firmy mozna podzielic na poszczegolne podregiony NUTS3 w ktorych najczesciej uzywaja aplikacji
+#W wartosciach bezwezglednym aplikacja jest uzywana rzadko w podregionie szczecinsko-pyrzyckim, z kolei jest uzywana czesto w regionie zielonogórskim. Nie mowi to jeszcze o popularnosci aplikacji poniewaz nie bierze pod uwage populacji danych regionow.
+# Widoczny jest takze podzial na Polske pólnocna i poludniowa, na poludniu wiecej osob korzysta z aplikacji niz na polnocy
 
+barplot(table(klienci$plec),names.arg=c('Mezczyna','Kobieta'))
+#Na plcie, wsrod klientow jest wiecej mezczyzn niz kobiet
+
+barplot(table(klienci$czy_samochod),names.arg=c('Brak samochodu','Posiada samochod'))
+#Na fakt posiadania samochodow, wsrod klientow jest wiecej osob posiadajacych samochod
+
+barplot(table(klienci$czy_mieszkanie),names.arg=c('Brak mieszkania','Posiada mieszkania'))
+#Na fakt posiadania mieszkania, minimalnie wiecej osob posiada mieszkanie
+mean(klienci$wiek[!is.na(klienci$wiek)])
+median(klienci$wiek[!is.na(klienci$wiek)])
+#Jest to zaskakujace biorac pod uwage sredni wiek/mediane wieku 50.9/51 lat klientow
+#W Polsce ponad 84% mieszkań wlasnosciowych i nie mamy do czynienia z klientami bardzo mlodymi 
+#zatem zaskakujaco duzo sposrod naszych klientow nie posiada mieszkania
+
+quantile(klienci$wiek, na.rm = TRUE)
+#Ze wzgledu na wiek
+#25% klientow jest w wieku w wieku od 18 do 25 lat
+#25% klientow jest w wieku w wieku od 47 do 51 lat
+#25% klientow jest w wieku w wieku od 51 do 55 lat
+#25% klientow jest w wieku w wieku od 55 do 73 lat
+#Aż 50% klientów jest w wieku od 47 do 55 lat
+#Widac wiec ze bardzo wielu naszych klientow jest w poznych wieku srednim
+#Srednia wynoi 51 lat i jest bardzo bliska mediany, nie ma wyraznej asymetrii rozkładu wieku klientow
+densityplot(klienci$wiek)
 
 
 #3.	Czy model płatny trafia zgodnie z założeniami do wykształconej grupy odbiorców?

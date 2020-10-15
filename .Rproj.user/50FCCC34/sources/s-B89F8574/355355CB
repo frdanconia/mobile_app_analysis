@@ -3,7 +3,7 @@
     "path": "~/GitHub/mobile_app_analysis/main.R",
     "project_path": "main.R",
     "type": "r_source",
-    "hash": "1093619964",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1602692642882.0,
@@ -11,15 +11,15 @@
     "relative_order": 1,
     "properties": {
         "tempName": "Untitled1",
-        "cursorPosition": "48,0",
-        "scrollLine": "39"
+        "cursorPosition": "91,0",
+        "scrollLine": "91"
     },
     "folds": "",
-    "lastKnownWriteTime": 1602723407,
+    "lastKnownWriteTime": 1602727170,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1602723407154,
+    "last_content_update": 1602727170347,
     "read_only": false,
     "read_only_alternatives": []
 }

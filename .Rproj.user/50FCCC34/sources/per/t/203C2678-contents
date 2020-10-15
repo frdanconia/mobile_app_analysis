@@ -1,0 +1,46 @@
+---
+title: "Zadanie 1 "
+output: html_notebook
+---
+
+```{r}
+library(foreach)
+library(dplyr)
+library(tidyr)
+library(mice)
+library(vroom)
+library(lubridate)
+library(tidyverse)
+library(lmtest)
+library(rgdal)
+library(sp)
+library(spdep)
+library(rgeos)
+library(RColorBrewer)
+library(classInt)
+library(dbscan)
+source("PlotDbscanClustering.R")
+klienci <- vroom("data/klienci.csv")
+session_geo <- vroom("data/session_geo.csv")
+session_info <- vroom("data/session_info.csv")
+klienci[, 1] <- c()
+```
+
+1.	Ilu firma ma obecnie klientów i jaki procent z nich korzysta z usługi premium?
+
+```{r}
+length(unique(klienci$klient_id))
+length(unique(klienci$klient_id[klienci$czy_w_bazie_klientow == 1]))
+```
+Zakladajac, że baza danych zawiera wszystkich klientow firmy, firma ta ma obecnie 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy oraz 6000 klientów obecnych tylko w analizowanej bazie
+
+```{r}
+
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

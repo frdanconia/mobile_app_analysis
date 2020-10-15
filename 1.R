@@ -12,6 +12,8 @@ library(spdep)
 library(rgeos)
 library(RColorBrewer)
 library(classInt)
+library(dbscan)
+source("PlotDbscanClustering.R")
 
 klienci <- vroom("data/klienci.csv")
 session_geo <- vroom("data/session_geo.csv")
@@ -299,10 +301,41 @@ ggplot(klienci_ordered, aes(x = day, y = nclients)) + geom_point() + scale_x_dat
 #Drugi na przelomie lutego i marca -> nastepuje przyspieszenie tempa pozyskiwania nowych uzytkownikow
 #Trzeci na przelomie marca i lutego -> powoli przestajemy pozyskiwac jakichkolwiek nowych uzytkownikow
 
-#7.	Jakie rodzaje segmentów użytkowników aplikacji posiadamy? Które segmenty częściej sięgają po usługę premium?
-source("PlotPcaFeatures.R")
-source("PlotPcaClustering.R")
+#7.	Jakie rodzaje segmentów użytkowników aplikacji posiadamy? Które segmenty częściej sięgają po usługę premium
 
+klienci_clustering <- klienci
+klienci_clustering$first_day <- c()
+onehotmatrix <- model.matrix(object = czy_kupil ~ . - 1, data = klienci_clustering)
+
+#Model Dbscan sie bardzo mocno przetrenowywuje ze wzgledu na mala ilosc danych, zrobiony glownie pod wizualizacje
+PlotDbscanClustering(onehotmatrix,'plec')
+
+table(klienci$czy_kupil[klienci$plec == 0])
+table(klienci$czy_kupil[klienci$plec == 1])
+#Kobiety relatywnie czesciej kupuja uslugi premium, segment plec ma znaczenie, mimo ze jest ich w populacji mniej to jest wiecej przypadkow kupna przez kobiety
+
+PlotDbscanClustering(onehotmatrix,'czy_mieszkanie')
+table(klienci$czy_kupil[klienci$czy_mieszkanie == 0])
+table(klienci$czy_kupil[klienci$czy_mieszkanie == 1])
+#Osoby z mieszkaniem nieco czesciej kupuja uslugi premium
+
+quantile(klienci$wiek, na.rm = TRUE)
+
+table(klienci$czy_kupil[klienci$wiek < 47])
+table(klienci$czy_kupil[!klienci$wiek < 47])
+#Osoby w wieku mlodszym niz 47 lat kupuja czesciej uslugi premium niz pozostali
+
+table(klienci$czy_kupil[klienci$wiek > 47 & klienci$wiek < 51])
+table(klienci$czy_kupil[!klienci$wiek > 47 & klienci$wiek < 51])
+#Osoby miedzy 47 a 51 rokiem zycia kupuja rzadziej uslugi premium niz pozostali
+
+table(klienci$czy_kupil[klienci$wiek > 51 & klienci$wiek < 55])
+table(klienci$czy_kupil[!klienci$wiek > 51 & klienci$wiek < 55])
+#Osoby miedzy 51 a 55 rokiem zycia kupuja nieco rzadziej uslugi premium niz pozostali
+
+table(klienci$czy_kupil[klienci$wiek > 55 & klienci$wiek < 73])
+table(klienci$czy_kupil[!klienci$wiek > 55 & klienci$wiek < 73])
+#Osoby miedzy 55 a 73 rokiem zycia kupuja nieco rzadziej uslugi premium niz pozostali
 
 
 #8.	Czy klienci korzystają z aplikacji w jednym miejscu, czy może w większej liczbie miejsc? Jaki jest średni rozrzut odległości w wykorzystaniu aplikacji?

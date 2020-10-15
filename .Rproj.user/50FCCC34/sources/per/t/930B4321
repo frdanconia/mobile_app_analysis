@@ -1,0 +1,24 @@
+{
+    "id": "930B4321",
+    "path": "~/GitHub/mobile_app_analysis/PlotDbscanClustering.R",
+    "project_path": "PlotDbscanClustering.R",
+    "type": "r_source",
+    "hash": "2419456957",
+    "contents": "",
+    "dirty": false,
+    "created": 1602766164420.0,
+    "source_on_save": false,
+    "relative_order": 8,
+    "properties": {
+        "cursorPosition": "28,66",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1602767344,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1602767344024,
+    "read_only": false,
+    "read_only_alternatives": []
+}

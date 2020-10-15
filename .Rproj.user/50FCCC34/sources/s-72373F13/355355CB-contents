@@ -12,6 +12,7 @@ library(spdep)
 library(rgeos)
 library(RColorBrewer)
 library(classInt)
+library(dbscan)
 
 klienci <- vroom("data/klienci.csv")
 session_geo <- vroom("data/session_geo.csv")

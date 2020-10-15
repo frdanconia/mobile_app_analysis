@@ -3,7 +3,7 @@
     "path": "~/GitHub/mobile_app_analysis/2.R",
     "project_path": "2.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "822683572",
     "contents": "",
     "dirty": false,
     "created": 1602759528593.0,
@@ -11,8 +11,8 @@
     "relative_order": 1,
     "properties": {
         "tempName": "Untitled1",
-        "cursorPosition": "4,0",
-        "scrollLine": "0"
+        "cursorPosition": "45,14",
+        "scrollLine": "36"
     },
     "folds": "",
     "lastKnownWriteTime": 1602763448,

@@ -1,0 +1,19 @@
+"0","oo <- check_oo(session_geo$lat[3], session_geo$lon[3], 5000)
+"
+"2","Issuing query to OSM Overpass...
+"
+"2","2 slots available now.
+"
+"1","[1]"
+"1"," ""2 slots available now."""
+"1","
+"
+"2","Query complete!
+"
+"1",""
+"1"," "
+"1"," |                                                  |"
+"1"," "
+"1","0 % ~calculating  "
+"2","
+"

@@ -1,0 +1,122 @@
+---
+title: "Zadanie 3"
+output:
+  html_document:
+    df_print: paged
+---
+
+<h3>Firma chce wdrożyć odpowiednią komunikację marketingową dla klientów, u których można stwierdzić szanse kupna produktu premium. Stwórz model klasyfikacyjny, którego celem jest przewidywanie którzy klienci mogą wykupić usługę premium. Jaka jest skuteczność takiego modelu? Jakie zmienne mają największy wpływ na decyzję o kupnie?</h3>
+
+```{r}
+suppressMessages(library(dplyr))
+suppressMessages(library(vroom))
+suppressMessages(library(lubridate))
+suppressMessages(library(xgboost))
+suppressMessages(library(mice))
+suppressMessages(library(xgboost))
+suppressMessages(library(matrixStats))
+suppressMessages(library(Matrix))
+```
+
+```{r}
+source("VarSummary.R")
+data <- readRDS("klienci.RDS")
+suppressMessages(VarSummary(data))
+
+```
+
+```{r}
+md.pattern(data)
+```
+
+```{r}
+imputed_data <- mice(data, m=5, maxit = 50, method = 'pmm', seed = 500)
+densityplot(imputed_data)
+
+dt <- complete(imputed_data,3)
+```
+
+```{r}
+onehotmatrix <- model.matrix(object = czy_kupil ~ ., data = dt)
+temp_df <- data.frame(onehotmatrix)
+temp_df <- temp_df %>% left_join(dt)
+```
+
+
+```{r}
+col.scale <- colMaxs(abs(onehotmatrix))
+x.sc <- sweep(onehotmatrix, 2, col.scale, "/")
+
+dtrain <- xgb.DMatrix(Matrix(x.sc, sparse = TRUE),
+                      label = as.integer(temp_df$czy_kupil))
+```
+
+```{r}
+xgb.params <- list(
+  "booster" = "gbtree",
+  "eta" = 0.05,
+  "max_depth" = 4,
+  "subsample" = 0.632,
+  "colsample_bytree" = 0.4,
+  "colsample_bylevel" = 0.6,
+  "min_child_weight" = 1,
+  "gamma" = 0,
+  "lambda" = 0,
+  "alpha" = 0,
+  "objective" = "binary:logistic",
+  "eval_metric" = "auc",
+  "silent" = 1,
+  "nthread" = 4,
+  "num_parallel_tree" = 5
+)
+```
+
+```{r}
+set.seed(2020)
+cv.out <-
+  xgb.cv(
+    params = xgb.params,
+    data = dtrain,
+    nrounds = 1.5e3,
+    metrics = list('error'),
+    nfold = 5,
+    prediction = FALSE,
+    verbose = TRUE,
+    showsd = FALSE,
+    print.every.n = 10,
+    early.stop.round = 10,
+    maximize = TRUE
+  ) 
+
+cv.out
+```
+
+0.706 auc na treningu przy odchyleniu standardowym 0.033 (5 krotna cross-walidacja), przyzwoity wynik jak na tak maly zbior danych
+
+```{r}
+xgb.model <- xgb.train(data = dtrain,
+                       params = xgb.params,
+                       nrounds = 500)
+```
+
+```{r}
+var.imp <- xgb.importance(colnames(x.sc), model = xgb.model) %>%
+  mutate(Feature = gsub('[0-9]+', '', Feature)) %>%
+  group_by(Feature) %>%
+  summarise(Importance = quantile(Gain, 0.9)) %>%
+  ungroup() %>%
+  arrange(desc(Importance)) %>%
+  mutate(Importance = round(100 * Importance / sum(Importance), 2))
+```
+
+Na decyzje o kupnie najwiekszy wplyw ma 
+
+a) wiek (wysoka istotnosc parametru bylo widac juz na etapie ekspolarcji zbioru danych)
+
+b) wynagrodzenie
+
+c) plec
+
+d) czestotliwosc uzywania aplikacji
+
+Przypuszczalnie czestotliowsc uzywania aplikacji ma wiekszy wplyw niż wynikaloby to z importance matrix z uwagi na to, ze jest ona reprezentowana przez rozne, silnie wspolniniowe zmienne. Xgboost jak wszystkie modele drzewiaste nie jest wrazliwy wspolliniowosc zmiennych pod katem jakosci tworzenia modelu, wspolliniowosc ma jednak wplyw na ksztalt importance matrix.

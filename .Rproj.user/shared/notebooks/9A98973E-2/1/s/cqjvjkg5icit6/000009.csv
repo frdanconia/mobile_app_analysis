@@ -1,0 +1,6 @@
+"0","plot(oo,
+     col = factor(oo@data$highway),
+     lty = (oo@data$tunnel == ""yes"") + 1)
+"
+"2","Error in plot.xy(xy.coords(x, y), type = type, ...) : invalid line type
+"

@@ -3,7 +3,7 @@
     "path": "~/GitHub/mobile_app_analysis/2.Rmd",
     "project_path": "2.Rmd",
     "type": "r_markdown",
-    "hash": "0",
+    "hash": "2697534762",
     "contents": "",
     "dirty": false,
     "created": 1602771232858.0,
@@ -11,15 +11,15 @@
     "relative_order": 3,
     "properties": {
         "tempName": "Untitled1",
-        "cursorPosition": "86,61",
+        "cursorPosition": "82,65",
         "scrollLine": "80"
     },
     "folds": "",
-    "lastKnownWriteTime": 1602800108,
+    "lastKnownWriteTime": 1602802764,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1602800108654,
+    "last_content_update": 1602802764939,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -224,7 +224,6 @@ bptest(model)
 #Charakter tej zaleznosci w lepszym stopniu oddaje regresja ważona lokalnie (loess) widoczna na wykresach niz regresja liniowa.
 
 #4.Podsumowywujac - tak, istnieje zaleznosc miedzy zarobkami klientow a czestotliowoscia uzywania aplikacji i jest ona widoczna na wykresach
-#(tj. osoby ponadprzecietnie czesto korzystajace z aplikacji sa zazwyczaj osobami ponadprzecietnei zarabiajacymi)
 #choc wariancja jest dosyc wysoka, jest duże grono osób ponadprzecietnie zarabiajacych i nieróżniacych sie od osob biedniejszych pod katem czestotliwosci uzywania aplikacji.
 
 
@@ -343,6 +342,29 @@ table(klienci$czy_kupil[klienci$wiek > 55 & klienci$wiek < 73])
 table(klienci$czy_kupil[!klienci$wiek > 55 & klienci$wiek < 73])
 #Osoby miedzy 55 a 73 rokiem zycia kupuja nieco rzadziej uslugi premium niz pozostali
 
+#Ze  wzgledu na wynagrodzenie
+densityplot(klienci$wynagrodzenie)
+#Delikatna prawostronna asymetria rozkadu wynagrodzen
+
+quantile(klienci$wynagrodzenie, na.rm = TRUE)
+
+table(klienci$czy_kupil[klienci$wynagrodzenie < 6677.5])
+table(klienci$czy_kupil[!klienci$wynagrodzenie < 6677.5])
+#Osoby z wynagrodzeniem poni�ej 6677.5 (pierwszy kwartyl) czesciej kupuja uslugi premium niz pozostali
+
+table(klienci$czy_kupil[klienci$wynagrodzenie > 6677.5 & klienci$wynagrodzenie < 7793])
+table(klienci$czy_kupil[!klienci$wynagrodzenie > 6677.5 & klienci$wynagrodzenie < 7793])
+#Osoby z wynagrodzeniem poni�ej miedzy 6677.5 a 7793 nieco rzadziej kupuja uslugi premium niz pozostali
+
+table(klienci$czy_kupil[klienci$wynagrodzenie > 7793.0 & klienci$wynagrodzenie < 9546.5])
+table(klienci$czy_kupil[!klienci$wynagrodzenie > 7793.0 & klienci$wynagrodzenie < 9546.5])
+#Osoby z wynagrodzeniem poni�ej miedzy 7793 a 9546.5 nieco rzadziej kupuja uslugi premium niz pozostali
+
+table(klienci$czy_kupil[klienci$wynagrodzenie > 9546.5])
+table(klienci$czy_kupil[!klienci$wynagrodzenie > 9546.5])
+#Osoby z wynagrodzeniem powyzej 9546.5 nieco rzadziej kupuja uslugi premium niz pozostali
+
+#Ciekawa zaleznosc -> osoby najmniej zarabiajace najczesciej kupuja uslugi premium
 
 #8.	Czy klienci korzystają z aplikacji w jednym miejscu, czy może w większej liczbie miejsc? Jaki jest średni rozrzut odległości w wykorzystaniu aplikacji?
 

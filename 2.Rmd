@@ -80,14 +80,18 @@ check_residental_coverage <- function(lat, lon, meter) {
 ```
 
 ```{r}
-check_residental_coverage(session_geo$lat[231], session_geo$lon[231], 1000)
+check_residental_coverage(session_geo$lat[22], session_geo$lon[22], 1000)
 ```
 
 ```{r}
-oo <- check_oo(session_geo$lat[901], session_geo$lon[901], 10000)
+oo <- check_oo(session_geo$lat[2425], session_geo$lon[2425], 6000)
 ```
 ```{r}
+
+if(sum(is.na(oo@data$tunnel)) != 0){
 oo@data$tunnel[is.na(oo@data$tunnel)] <- "no"
+}
+
 plot(oo,
      col = factor(oo@data$highway),
      lty = (oo@data$tunnel == "yes") + 1)
@@ -95,3 +99,8 @@ plot(oo,
 
 
 To API ma wiele problemow, dla zastosowan produkcyjnych trzeba byloby pobrac mapy OSM https://download.geofabrik.de/ i zaladowac w formacie shapefile
+
+```{r}
+
+
+```

@@ -19,9 +19,7 @@ suppressMessages(library(Matrix))
 ```
 
 ```{r}
-source("VarSummary.R")
 data <- readRDS("klienci.RDS")
-suppressMessages(VarSummary(data))
 
 ```
 
@@ -91,7 +89,7 @@ cv.out <-
 cv.out
 ```
 
-0.706 auc na treningu przy odchyleniu standardowym 0.033 (5 krotna cross-walidacja), przyzwoity wynik jak na tak maly zbior danych
+0.706 auc na zbiorze testowym przy odchyleniu standardowym 0.033 (5 krotna cross-walidacja), przyzwoity wynik jak na tak maly zbior danych
 
 ```{r}
 xgb.model <- xgb.train(data = dtrain,
@@ -107,6 +105,8 @@ var.imp <- xgb.importance(colnames(x.sc), model = xgb.model) %>%
   ungroup() %>%
   arrange(desc(Importance)) %>%
   mutate(Importance = round(100 * Importance / sum(Importance), 2))
+
+var.imp
 ```
 
 Na decyzje o kupnie najwiekszy wplyw ma 

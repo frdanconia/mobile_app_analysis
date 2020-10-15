@@ -189,7 +189,7 @@ To czy model biznesowy trafia do osob wyksztalconych zalezy od struktury wykszta
 
 Nie ma ani jednej obserwacji z wyksztalceniem zasadniczym zawodowym, wiec trzeba byloby sie zastanowic czy jest ono kodowane jako podstawowe czy srednie razem z wyksztalceniem srednim zawodowym.
 
-Zakladajac ze grupa potencjalnych klientow odzwierciedla populacje Polski i biorac jednak pod uwage ze sredni wiek klientow wynosi 50,87 lat a mediana 51 lat to fakt, że w populacji klientow, ktorzy wykupili uslugi premium znajduje sie o ponad 40% wiecej osob z wyksztalceniem wyzszym niz podstawowym nalezy uznac za sukces gdyz w populacji Polski osoby w tym wieku kilkukrotnie czesciej maja wyksztalcenie zasadnicze zawodowe.
+Zakladajac ze grupa potencjalnych klientow odzwierciedla populacje Polski i biorac pod uwage ze sredni wiek klientow wynosi 50,87 lat a mediana 51 lat to fakt, że w populacji klientow, ktorzy wykupili uslugi premium znajduje sie o ponad 40% wiecej osob z wyksztalceniem wyzszym niz podstawowym nalezy uznac za sukces gdyz w populacji Polski osoby w tym wieku kilkukrotnie czesciej maja wyksztalcenie zasadnicze zawodowe.
 
 ```{r figurename2, out.width = "550px"}
 knitr::include_graphics("wyksztalcenie.png")
@@ -318,7 +318,12 @@ plot(model, which = 4)
 
 Jest kilka outlierow, zmiany wartoci wspóczynników regresji przy pominiciu tych obserwacji nie przekraczaja 0.1
 
+```{r}
+bptest(model)
+```
+
 Na kazdym realistycznym poziomie istotnosci odrzucamy H0 o stabilnosci wariancji skladnika losowego
+
 Charakter tej zaleznosci w lepszym stopniu oddaje regresja ważona lokalnie (loess) widoczna na wykresach niz regresja liniowa.
 
 Podsumowywujac - tak, istnieje zaleznosc miedzy zarobkami klientow a czestotliowoscia uzywania aplikacji i jest ona widoczna na wykresach (tj. osoby ponadprzecietnie czesto korzystajace z aplikacji sa zazwyczaj osobami ponadprzecietnei zarabiajacymi)
@@ -427,7 +432,7 @@ Drugi na przelomie lutego i marca -> nastepuje przyspieszenie tempa pozyskiwania
 
 Trzeci na przelomie marca i lutego -> powoli przestajemy pozyskiwac jakichkolwiek nowych uzytkownikow
 
-<h3>Jakie rodzaje segmentów użytkowników aplikacji posiadamy? Które segmenty częściej sięgają po usługę premium</h3>
+<h3>Zad 7. Jakie rodzaje segmentów użytkowników aplikacji posiadamy? Które segmenty częściej sięgają po usługę premium</h3>
 
 ```{r}
 klienci_clustering <- klienci
@@ -485,6 +490,46 @@ table(klienci$czy_kupil[!klienci$wiek > 55 & klienci$wiek < 73])
 
 Osoby miedzy 55 a 73 rokiem zycia kupuja nieco rzadziej uslugi premium niz pozostali
 
+Ze  wzgledu na wynagrodzenie
+
+```{r}
+densityplot(klienci$wynagrodzenie)
+```
+
+Delikatna prawostronna asymetria rozkadu wynagrodzen
+
+```{r}
+quantile(klienci$wynagrodzenie, na.rm = TRUE)
+
+table(klienci$czy_kupil[klienci$wynagrodzenie < 6677.5])
+table(klienci$czy_kupil[!klienci$wynagrodzenie < 6677.5])
+```
+
+Osoby z wynagrodzeniem poniżej 6677.5 (pierwszy kwartyl) czesciej kupuja uslugi premium niz pozostali
+
+```{r}
+table(klienci$czy_kupil[klienci$wynagrodzenie > 6677.5 & klienci$wynagrodzenie < 7793])
+table(klienci$czy_kupil[!klienci$wynagrodzenie > 6677.5 & klienci$wynagrodzenie < 7793])
+```
+
+Osoby z wynagrodzeniem miedzy 6677.5 a 7793 nieco rzadziej kupuja uslugi premium niz pozostali
+
+```{r}
+table(klienci$czy_kupil[klienci$wynagrodzenie > 7793.0 & klienci$wynagrodzenie < 9546.5])
+table(klienci$czy_kupil[!klienci$wynagrodzenie > 7793.0 & klienci$wynagrodzenie < 9546.5])
+```
+
+Osoby z wynagrodzeniem miedzy 7793 a 9546.5 nieco rzadziej kupuja uslugi premium niz pozostali
+
+```{r}
+table(klienci$czy_kupil[klienci$wynagrodzenie > 9546.5])
+table(klienci$czy_kupil[!klienci$wynagrodzenie > 9546.5])
+```
+
+Osoby z wynagrodzeniem powyzej 9546.5 nieco rzadziej kupuja uslugi premium niz pozostali
+
+Ciekawa zaleznosc -> osoby najmniej zarabiajace najczesciej kupuja uslugi premium
+
 <h3>Zad 8.	Czy klienci korzystają z aplikacji w jednym miejscu, czy może w większej liczbie miejsc? Jaki jest średni rozrzut odległości w wykorzystaniu aplikacji?</h3>
 
 ```{r}
@@ -524,116 +569,3 @@ Brak wyraznej asymetrii rozkladu rozrzutu odlegosci w wykorzystaniu aplikacji pr
 
 ```
 
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```
-
-
-
-```{r}
-
-```

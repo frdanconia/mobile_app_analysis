@@ -23,11 +23,11 @@ length(unique(klienci$klient_id))
 length(unique(klienci$klient_id[klienci$czy_w_bazie_klientow == 1]))
 #1. Zakladajac, że baza danych zawiera wszystkich klientow firmy, firma ta ma obecnie 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy oraz 6000 klientów obecnych tylko w analizowanej bazie
 
-klienci_w_bazie <- klienci[klienci$czy_w_bazie_klientow == 1, ]
+klienci_w_bazie <- klienci[klienci$czy_w_bazie_klientow == 1,]
 sum(klienci_w_bazie$czy_kupil) / nrow(klienci_w_bazie)
 #1. Sposrod 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  18% klientow kupilo uslugi premium
 
-sum(klienci[klienci$czy_w_bazie_klientow == 0, ]$czy_kupil) / nrow(klienci[klienci$czy_w_bazie_klientow == 0, ])
+sum(klienci[klienci$czy_w_bazie_klientow == 0,]$czy_kupil) / nrow(klienci[klienci$czy_w_bazie_klientow == 0,])
 #1. Sposrod 1234 klientów którzy znajduja sie tylko w tej jednej bazie firmy 16.85% klientow kupilo uslugi premium
 
 sum(klienci$czy_kupil) / nrow(klienci)
@@ -51,12 +51,12 @@ coord2nuts <- function(lon_lat) {
 
 session$nuts3 <- coord2nuts(lon_lat)$NUTS_ID
 freq <- data.frame(table(session$nuts3))
-freq <- freq[grepl("PL", freq$Var1), ]
-colnames(freq) <- c("NUTS_ID","FREQ")
+freq <- freq[grepl("PL", freq$Var1),]
+colnames(freq) <- c("NUTS_ID", "FREQ")
 
 map@data$NUTS_ID_char <- as.character(map@data$NUTS_ID)
 map@data$country <- substr(map@data$NUTS_ID_char, 1, 2)
-map <- map[map@data$country == "PL",]
+map <- map[map@data$country == "PL", ]
 
 spatial_data <-
   merge(
@@ -175,7 +175,8 @@ for (i in 1:length(salary$klient_id)) {
 
 salary$klient_ndays <-
   salary$klient_ndays / min(salary$klient_ndays)
-salary$nsessions_per_ndays <-  salary$nsessions / salary$klient_ndays
+salary$nsessions_per_ndays <-
+  salary$nsessions / salary$klient_ndays
 #4.im czesciej tym srednia jest nizsza a spodziewamy sie ze im czesciej tym lepszy klient dla nas
 salary$activity_frequency <-
   1 / (salary$avg_diff_days / min(salary$avg_diff_days))
@@ -233,12 +234,13 @@ ggplot(salary, aes(x = session_length_10percentile, y = wynagrodzenie)) + geom_p
 
 #5.	W jakich regionach kraju aplikacja nie jest jeszcze zbyt popularna?
 poland_nuts3_population <- vroom("poland_nuts3_population.csv")
-poland_nuts3_population <-  poland_nuts3_population[poland_nuts3_population$TIME == 2013, ]
+poland_nuts3_population <-
+  poland_nuts3_population[poland_nuts3_population$TIME == 2013,]
 
 poland_pop <-
   data.frame(NUTS_ID = poland_nuts3_population$GEO, POP = poland_nuts3_population$Value)
 
-poland_pop$POP <- as.numeric(gsub(",","",poland_pop$POP))
+poland_pop$POP <- as.numeric(gsub(",", "", poland_pop$POP))
 
 freq <- freq %>% left_join(poland_pop, by = "NUTS_ID")
 freq$FREQ_PER_POP <- freq$FREQ / freq$POP
@@ -261,7 +263,7 @@ plot(spatial_data,
      axes = F,
      main = "Ilosc przypadkow uzycia aplikacji wzgledem populacji regionu")
 
-#Aplikacja nie jest jeszcze zbyt popularna w regionach takich jak:
+#5. Aplikacja nie jest jeszcze zbyt popularna w regionach takich jak:
 #szczecinsko-przycyki
 #pilski
 #chojnicki
@@ -277,13 +279,41 @@ plot(spatial_data,
 
 
 #6.	Jak przyrastała nam liczba użytkowników w czasie? Czy było jakieś wydarzenie, które miało wpływ na liczbę użytkowników?
+for (i in 1:length(klienci$klient_id)) {
+  dates <-
+    session_info$date[session_info$klient_id == klienci$klient_id[i]]
+  dates <- dates[dates != "0"]
+  dates <- dates[!is.na(dates)]
+  dates <- as.Date(dates)
+  klienci$first_day[i] <- min(dates)
+}
 
+klienci_ordered <- klienci[order(klienci$first_day),]
+klienci_ordered$nclients <- seq(1,length(klienci_ordered$klient_id),by=1)
+klienci_ordered$day <- as.Date(klienci_ordered$first_day)
+
+ggplot(klienci_ordered, aes(x = day, y = nclients)) + geom_point() + scale_x_date(breaks = "2 weeks")
+
+#6. Widac 3 przelomowe momenty
+#Pierwszy na przelomie stycznia i lutego -> nastepuje spowolnienie tempa pozyskiwania nowych uzytkonwnikow, które trwa przez caly luty
+#Drugi na przelomie lutego i marca -> nastepuje przyspieszenie tempa pozyskiwania nowych uzytkownikow
+#Trzeci na przelomie marca i lutego -> powoli przestajemy pozyskiwac jakichkolwiek nowych uzytkownikow
 
 #7.	Jakie rodzaje segmentów użytkowników aplikacji posiadamy? Które segmenty częściej sięgają po usługę premium?
+source("PlotPcaFeatures.R")
+source("PlotPcaClustering.R")
+
 
 
 #8.	Czy klienci korzystają z aplikacji w jednym miejscu, czy może w większej liczbie miejsc? Jaki jest średni rozrzut odległości w wykorzystaniu aplikacji?
 
-for(i in 1:length()){
-  
+for (i in 1:length(klienci$klient_id)) {
+  klienci$nloc[i] <-
+    length(unique(session[session$klient_id == klienci$klient_id[i], ]$nuts3))
 }
+
+barplot(table(klienci$nloc))
+table(klienci$nloc)
+(392 + 35) / (3344 + 2229 + 392 + 35)
+
+#8Wiekszosc klientow korzysta z aplikacji w 1 jednostce NUTS3, 50% mniej klientow korzysta z aplikacji w 2 jednostkach NUTS3. Zaledwie 7% klientow korzysta z aplikacji w 3 lub wiekszej ilosci jednostek administracyjnych.

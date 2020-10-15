@@ -1,0 +1,185 @@
+# library("devtools")
+# install_github("davpinto/fastknn")
+library(fastknn)
+library(magrittr)
+library(purrr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(hrbrthemes)
+library(reshape2)
+library(plotly)
+library(matrixStats)
+library(dbscan)
+library(MASS)
+library(h2o)
+library(Rtsne)
+library(Matrix)
+library(xgboost)
+library(tidyverse)
+library(mice)
+source("PlotVariableCardinality.R")
+source("PlotVariableSparsity.R")
+source("PlotFeatureTransformation.R")
+source("PlotRowstatsFeatures.R")
+source("PlotDbscanClustering.R")
+source("PlotPcaClustering.R")
+source("PlotPcaFeatures.R")
+source("PlotLdaFeatures.R")
+source("PlotTsneFeatures.R")
+source("PlotAutoencoderFeatures.R")
+source("PlotKnnFeatures.R")
+set.seed(2020)
+
+load("./data/census_income.rda")
+
+glimpse(census.income)
+md.pattern(census.income)
+imputed_data <- mice(census.income, m=5, maxit = 1, method = 'pmm', seed = 500)
+#densityplot(imputed_data)
+dt.fill <- complete(imputed_data,3)
+onehotmatrix <- model.matrix(object = income ~ . - 1, data = dt.fill)
+col.scale <- colMaxs(abs(onehotmatrix))
+x.sc <- sweep(onehotmatrix, 2, col.scale, "/")
+
+PlotVariableSparsity(onehotmatrix)
+PlotVariableCardinality(dt.fill,"income")
+PlotFeatureTransformation(dt.fill)
+
+PlotRowstatsFeatures(dt.fill)
+PlotDbscanClustering(onehotmatrix)
+PlotPcaClustering(onehotmatrix)
+PlotPcaFeatures(dt.fill,onehotmatrix,"income")
+PlotLdaFeatures(dt.fill,onehotmatrix,"income")
+PlotTsneFeatures(dt.fill,onehotmatrix,iter = 50)
+PlotAutoencoderFeatures(dt.fill,onehotmatrix,epochs = 1)
+PlotKnnFeatures(dt.fill,onehotmatrix)
+
+
+
+## Train xgboost with original features
+dtrain <- xgb.DMatrix(Matrix(x.sc, sparse = TRUE),
+                      label = as.integer(dt.fill$income) - 1)
+xgb.params <- list(
+   "booster" = "gbtree",
+   "eta" = 0.05,
+   "max_depth" = 4,
+   "subsample" = 0.632,
+   "colsample_bytree" = 0.4,
+   "colsample_bylevel" = 0.6,
+   "min_child_weight" = 1,
+   "gamma" = 0,
+   "lambda" = 0,
+   "alpha" = 0,
+   "objective" = "binary:logistic",
+   "eval_metric" = "auc",
+   "silent" = 1,
+   "nthread" = 4,
+   "num_parallel_tree" = 5
+)
+set.seed(2020)
+cv.out <-
+   xgb.cv(
+      params = xgb.params,
+      data = dtrain,
+      nrounds = 1.5e3,
+      metrics = list('error'),
+      nfold = 5,
+      prediction = FALSE,
+      verbose = TRUE,
+      showsd = FALSE,
+      print.every.n = 10,
+      early.stop.round = 10,
+      maximize = TRUE
+   )
+
+
+xgb.model <- xgb.train(data = dtrain,
+                       params = xgb.params,
+                       nrounds = 750)
+var.imp <- xgb.importance(colnames(x.sc), model = xgb.model) %>%
+   mutate(Feature = gsub('[0-9]+', '', Feature)) %>%
+   group_by(Feature) %>%
+   summarise(Importance = quantile(Gain, 0.9)) %>%
+   ungroup() %>%
+   arrange(desc(Importance)) %>%
+   mutate(Importance = round(100 * Importance / sum(Importance), 2))
+
+## Train xgboost with new features
+load("data/rowstats_features.rda")
+load("data/cluster_features.rda")
+load("data/pca_features.rda")
+load("data/lda_features.rda")
+load("data/tsne_features.rda")
+load("data/autoencoder_features.rda")
+load("data/knn_features.rda")
+
+new.x <- cbind(x.rowstats,
+               x.cluster,
+               x.pca,
+               x.lda,
+               x.tsne,
+               x.autoencoder,
+               x.knn)
+
+dtrain <- xgb.DMatrix(Matrix(new.x, sparse = TRUE),
+                      label = as.integer(dt.fill$income) - 1)
+set.seed(2020)
+cv.out <-
+   xgb.cv(
+      params = xgb.params,
+      data = dtrain,
+      nrounds = 1.5e3,
+      metrics = list('error'),
+      nfold = 5,
+      prediction = FALSE,
+      verbose = TRUE,
+      showsd = FALSE,
+      print.every.n = 10,
+      early.stop.round = 10,
+      maximize = TRUE
+   )
+
+xgb.model <- xgb.train(data = dtrain,
+                       params = xgb.params,
+                       nrounds = 750)
+
+var.imp <- xgb.importance(colnames(new.x), model = xgb.model) %>%
+   mutate(Feature = gsub('[0-9]:', '', Feature)) %>%
+   group_by(Feature) %>%
+   summarise(Importance = quantile(Gain, 0.9)) %>%
+   ungroup() %>%
+   arrange(desc(Importance)) %>%
+   mutate(Importance = round(100 * Importance / sum(Importance), 2))
+
+## Train xgboost with all features
+all.x <- cbind(x.sc, new.x)
+dtrain <- xgb.DMatrix(Matrix(all.x, sparse = TRUE),
+                      label = as.integer(dt.fill$income) - 1)
+set.seed(2020)
+cv.out <-
+   xgb.cv(
+      params = xgb.params,
+      data = dtrain,
+      nrounds = 1.5e3,
+      metrics = list('error'),
+      nfold = 5,
+      prediction = FALSE,
+      verbose = TRUE,
+      showsd = FALSE,
+      print.every.n = 10,
+      early.stop.round = 10,
+      maximize = TRUE
+   )
+
+xgb.model <- xgb.train(data = dtrain,
+                       params = xgb.params,
+                       nrounds = 500)
+var.imp <- xgb.importance(colnames(all.x), model = xgb.model) %>%
+   mutate(Feature = gsub('[0-9]:', '', Feature)) %>%
+   group_by(Feature) %>%
+   summarise(Importance = quantile(Gain, 0.9)) %>%
+   ungroup() %>%
+   arrange(desc(Importance)) %>%
+   mutate(Importance = round(100 * Importance / sum(Importance), 2))
+

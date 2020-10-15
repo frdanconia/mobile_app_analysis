@@ -2,42 +2,78 @@ library(vroom)
 library(lubridate)
 library(tidyverse)
 library(lmtest)
+library(rgdal)
+library(sp)
+library(spdep)
+library(rgeos)
+library(foreach)
 
 klienci <- vroom("data/klienci.csv")
 session_geo <- vroom("data/session_geo.csv")
 session_info <- vroom("data/session_info.csv")
 klienci[, 1] <- c()
 
+#1.	Ilu firma ma obecnie klientów i jaki procent z nich korzysta z usługi premium?
 length(unique(klienci$klient_id))
 length(unique(klienci$klient_id[klienci$czy_w_bazie_klientow == 1]))
-#Zakladajac, że baza danych zawiera wszystkich klientow firmy, firma ta ma obecnie 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy oraz 6000 klientów obecnych tylko w analizowanej bazie
+#1. Zakladajac, że baza danych zawiera wszystkich klientow firmy, firma ta ma obecnie 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy oraz 6000 klientów obecnych tylko w analizowanej bazie
 
 klienci_w_bazie <- klienci[klienci$czy_w_bazie_klientow == 1,]
 sum(klienci_w_bazie$czy_kupil) / nrow(klienci_w_bazie)
-#Sposrod 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  18% klientow kupilo uslugi premium
+#1. Sposrod 4766 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  18% klientow kupilo uslugi premium
 
 sum(klienci[klienci$czy_w_bazie_klientow == 0,]$czy_kupil) / nrow(klienci[klienci$czy_w_bazie_klientow == 0,])
-#Sposrod 1234 klientów którzy znajduja sie tylko w tej jednej bazie firmy 16.85% klientow kupilo uslugi premium
+#1. Sposrod 1234 klientów którzy znajduja sie tylko w tej jednej bazie firmy 16.85% klientow kupilo uslugi premium
 
 sum(klienci$czy_kupil) / nrow(klienci)
-#Sposrod 6000 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  17.8% klientow kupilo uslugi premium
+#1. Sposrod 6000 klientów którzy znajduja sie przynajmniej w 2 bazach danych firmy  17.8% klientow kupilo uslugi premium
+
+#2.	Jak ze względu na dane demograficzne, geograficzne i wykorzystywania aplikacji można podzielić użytkowników firmy?
 
 session <- merge(session_info,session_geo,by="id_sesji")
 
-for (i in 1:length(klienci$klient_id)) {
-  klienci$lon_mean <- mean(session$lon[session$klient_id == klienci$klient_id[i]])
-  klienci$lon_sd <- sd(session$lon[session$klient_id == klienci$klient_id[i]])
-  klienci$lat_mean <- mean(session$lat[session$klient_id == klienci$klient_id[i]])
-  klienci$lat_sd <- sd(session$lat[session$klient_id == klienci$klient_id[i]])
+eu_nuts <- readOGR(".", "NUTS_RG_01M_2013")
+map <- subset(eu_nuts, STAT_LEVL_ == 3)
+lon_lat <- data.frame(lon=session$lon,lat=session$lat)
+
+coord2nuts <- function(lon_lat) {
+  coordinates(lon_lat) <- ~lon+lat
+  proj4string(lon_lat) <- CRS("+init=epsg:4326")
+  map@proj4string <- lon_lat@proj4string 
+  rt <- over(lon_lat,map)
+  return(rt)
 }
 
+session$nuts3 <- coord2nuts(lon_lat)$NUTS_ID
 
 
 
+
+
+loc <- data.frame(geo_mean$lon_mean,geo_mean$lat_mean)
+eu_nuts <- readOGR(".", "NUTS_RG_01M_2013")
+map <- subset(eu_nuts, STAT_LEVL_ == 3)
+proj4string(map)
+coordinates(loc)<-~lon+lat
+proj4string(loc)<-CRS("+init=epsg:4326")
+data <- spTransform(loc, proj4string(map))
+
+#select Poland
+map@data$NUTS_ID_char <- as.character(map@data$NUTS_ID)
+map@data$country <- substr(map@data$NUTS_ID_char, 1, 2) 
+map <- map[map@data$country == "PL", ]
+plot(map)
+points(data, pch = 10, col = "darkgoldenrod")
+
+
+
+
+
+#3.	Czy model płatny trafia zgodnie z założeniami do wykształconej grupy odbiorców?
 table(klienci$wyksztalcenie[klienci$czy_kupil == 1])
 mean(klienci$wiek[!is.na(klienci$wiek)])
 median(klienci$wiek[!is.na(klienci$wiek)])
-#To czy model biznesowy trafia do osob wyksztalconych zalezy od struktury wyksztalcenia w populacji potencjalnych klinetow
+#3. To czy model biznesowy trafia do osob wyksztalconych zalezy od struktury wyksztalcenia w populacji potencjalnych klinetow
 #Nie ma ani jednej obserwacji z wyksztalceniem zasadniczym zawodowym, wiec trzeba byloby sie zastanowic czy jest ono kodowane jako podstawowe czy srednie razem z wyksztalceniem srednim zawodowym
 #Zakladajac ze grupa potencjalnych klientow odzwierciedla populacje Polski
 #i biorac jednak pod uwage ze sredni wiek klientow wynosi 50,87 lat a mediana 51 lat to fakt, że w populacji klientow, ktorzy wykupili uslugi
@@ -47,7 +83,7 @@ median(klienci$wiek[!is.na(klienci$wiek)])
 #należaloby sie zastanowic czy satysfakcjonuje nas fakt, że mamy dokladnie tyle samo klientow z wyksztalceniem srednim i wyzszym
 
 
-
+#4.	Czy zarobki użytkowników mają wpływ na częstotliwość korzystania z aplikacji i czas spędzany w apce?
 salary <-
   data.frame(klient_id = klienci$klient_id,
              wynagrodzenie = klienci$wynagrodzenie)
@@ -98,45 +134,48 @@ for (i in 1:length(salary$klient_id)) {
 
 salary$klient_ndays <- salary$klient_ndays / min(salary$klient_ndays)
 salary$nsessions_per_ndays <-  salary$nsessions/salary$klient_ndays
-#im czesciej tym srednia jest nizsza a spodziewamy sie ze im czesciej tym lepszy klient dla nas
+#4.im czesciej tym srednia jest nizsza a spodziewamy sie ze im czesciej tym lepszy klient dla nas
 salary$activity_frequency <- 1/(salary$avg_diff_days/min(salary$avg_diff_days))
-#jezeli sredni czas miedzy iloscia sesji jest krotki to jedna sesja klienta jest "warta" wiecej
+#4.jezeli sredni czas miedzy iloscia sesji jest krotki to jedna sesja klienta jest "warta" wiecej
 salary$nsessions_per_avgdifftime <- salary$nsessions * salary$activity_frequency
 salary$activity_overall <- log(salary$nsessions_per_avgdifftime * salary$nsessions_per_ndays)
 
 
 ggplot(salary, aes(x = nsessions, y = wynagrodzenie)) + geom_point() + geom_smooth(method =
                                                                                      "loess", se = F)
-#Ciezko stwierdzic na ile parametr nsessions odzwierciedla czestosc korzystania z aplikacji bo jest on mocno zwiazany z tym od jak dawna dany klient jest naszym klientem
+#4. Ciezko stwierdzic na ile parametr nsessions odzwierciedla czestosc korzystania z aplikacji bo jest on mocno zwiazany z tym od jak dawna dany klient jest naszym klientem
 #Widać jednak, że klienci z wieksza ilosci sesji sa też klientami nieco lepiej zarabiajacymi
 #Sepcjalnie nie usuwalem brakow danych w wynagrodzeniu po to zeby potem latwo zmergowac z glownym df i przeprowadzić imputacje brakow danych
 
 ggplot(salary, aes(x = nsessions_per_ndays, y = wynagrodzenie)) + geom_point() + geom_smooth(method =
                                                                                      "loess", se = F)
-#zmienna nsessions_per_ndays poza iloscia akcji jakich dokonal klient bierze pod uwage uplyw czasu od pierwszej akcji jakiej dokonal klient czyli to jak dlugo jest naszym klientem
+#4. zmienna nsessions_per_ndays poza iloscia akcji jakich dokonal klient bierze pod uwage uplyw czasu od pierwszej akcji jakiej dokonal klient czyli to jak dlugo jest naszym klientem
 #widać, że klienci z wyzszym wynagrodzeniem sa bardziej aktywni w naszej aplikacji jednak nalezy zwrocic uwage na to, ze wariancja jest wysoka 
 
 temp <- salary %>% filter(activity_frequency < 0.3)
 ggplot(temp, aes(x = activity_frequency, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
-#osoby czesto korzystajace z aplikacji (majace bardzo niska srednio roznice w dniach miedzy jednym a nastepnym uzyciem aplikacji) maja wyzsze wynagrodzenie
+#4. osoby czesto korzystajace z aplikacji (majace bardzo niska srednio roznice w dniach miedzy jednym a nastepnym uzyciem aplikacji) maja wyzsze wynagrodzenie
 
 ggplot(salary, aes(x = nsessions_per_avgdifftime, y = wynagrodzenie)) + geom_point() + geom_smooth(method =
                                                                                            "loess", se = F)
 ggplot(salary, aes(x = activity_overall, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 
-
 model <- lm(activity_overall~wynagrodzenie,data=salary)
 summary(model)
 plot(model, which=1)
 plot(model, which=2)
-#Obserwacje odstajace na pierwszych kwantylach 
+#4. Obserwacje odstajace na pierwszych kwantylach 
 plot(model, which=4)
-#jest kilka outlierow jednak zmiany wartoci wspóczynników regresji przy pominiciu tych obserwacji nie przekraczaja 0.1 
-
+#4. jest kilka outlierow, zmiany wartoci wspóczynników regresji przy pominiciu tych obserwacji nie przekraczaja 0.1 
 bptest(model)
-#Na kazdym realistycznym poziomie istotnosci odrzucamy H0 o stabilnosci wariancji skladnika losowego
-#W danych widac zaleznosc miedzy zarobkami klientow a czestotliwoscia korzystania z aplikacji (tj. osoby ponadprzecietnie czesto korzystajace z aplikacji sa zazwyczaj osobami ponadprzecietnei zarabiajacymi) jednak prosty model liniowy uwzgledniajacy wylacznie czestosc korzystania z aplikacji jest niedostatecznie wyspecyfikowany 
-#W zwiazku z tym uzycie slowa "wplyw" w kontekscie tej zaleznosci byloby pewnym naduzyciem
+#4. Na kazdym realistycznym poziomie istotnosci odrzucamy H0 o stabilnosci wariancji skladnika losowego
+#Charakter tej zaleznosci w lepszym stopniu oddaje regresja ważona lokalnie (loess) widoczna na wykresach niz regresja liniowa.
+
+#4.Podsumowywujac - tak, istnieje zaleznosc miedzy zarobkami klientow a czestotliowoscia uzywania aplikacji i jest ona widoczna na wykresach 
+#(tj. osoby ponadprzecietnie czesto korzystajace z aplikacji sa zazwyczaj osobami ponadprzecietnei zarabiajacymi)
+salary
+#choc wariancja jest dosyc wysoka, jest duże grono osób ponadprzecietnie zarabiajacych i nieróżniacych sie od osob biedniejszych pod katem czestotliwosci uzywania aplikacji.
+
 
 ggplot(salary, aes(x = session_length_mean, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_median, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
@@ -145,12 +184,18 @@ temp <- salary %>% filter(session_length_variance < 600)
 ggplot(temp, aes(x = session_length_variance, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_90percentile, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
 ggplot(salary, aes(x = session_length_10percentile, y = wynagrodzenie)) + geom_point() + geom_smooth(method = "loess", se = F)
-#Zarobki klientów nie maja wplywu na czas sprzedzany w appce, srednia, mediana, wariancja i 10 i 90 percentyl spedzanego czasu na to nie wskazuja
+#4. Zarobki klientów nie maja wplywu na czas sprzedzany w appce, srednia, mediana, wariancja i 10 i 90 percentyl spedzanego czasu na to nie wskazuja
 
 
-temp <- salary
-temp$wynagrodzenie <- c()
-klienci <- merge(klienci,temp,by=c("klient_id"))
+#5.	W jakich regionach kraju aplikacja nie jest jeszcze zbyt popularna?
 
-klienci$
+
+#6.	Jak przyrastała nam liczba użytkowników w czasie? Czy było jakieś wydarzenie, które miało wpływ na liczbę użytkowników?
+
+
+#7.	Jakie rodzaje segmentów użytkowników aplikacji posiadamy? Które segmenty częściej sięgają po usługę premium?
+
+
+#8.	Czy klienci korzystają z aplikacji w jednym miejscu, czy może w większej liczbie miejsc? Jaki jest średni rozrzut odległości w wykorzystaniu aplikacji?
+
 

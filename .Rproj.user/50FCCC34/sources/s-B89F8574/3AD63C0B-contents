@@ -1,0 +1,2 @@
+#	Firma chce wdrożyć odpowiednią komunikację marketingową dla klientów, u których można stwierdzić szanse
+# kupna produktu premium. Stwórz model klasyfikacyjny, którego celem jest przewidywanie którzy klienci mogą wykupić usługę premium. Jaka jest skuteczność takiego modelu? Jakie zmienne mają największy wpływ na decyzję o kupnie?

@@ -1,0 +1,24 @@
+{
+    "id": "45C65BEC",
+    "path": "~/GitHub/mobile_app_analysis/PlotVariableSparsity.R",
+    "project_path": "PlotVariableSparsity.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1602809473249.0,
+    "source_on_save": false,
+    "relative_order": 8,
+    "properties": {
+        "cursorPosition": "16,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1602810234,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1602810234993,
+    "read_only": false,
+    "read_only_alternatives": []
+}

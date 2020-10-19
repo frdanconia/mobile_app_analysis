@@ -1,6 +1,0 @@
-[out:xml][timeout:25]; 
-( 
-  way["highway"="residential"](50.267076,18.758336,50.367076,18.858336);); 
-out body; 
->; 
-out skel qt;
